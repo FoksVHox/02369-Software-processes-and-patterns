@@ -34,3 +34,6 @@ build/
 
 ### Database ###
 *.db
+
+### Tailwind ###
+node_modules

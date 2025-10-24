@@ -1,13 +1,13 @@
 package com.group6.SongQueue.database;
 
-import org.sqlite.JDBC;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
 import org.springframework.stereotype.Repository;
+import org.sqlite.JDBC;
+
 import jakarta.annotation.PreDestroy;
 
 @Repository
@@ -25,10 +25,10 @@ public class DBConnection {
 	 */
 	public DBConnection() {
 		System.out.println("Creating SQLite connection");
-   		try {
+		try {
 			connection = JDBC.createConnection("jdbc:sqlite:database.db", new Properties());
 			Setup();
-	 	} catch(SQLException e) {
+		} catch(SQLException e) {
 			System.err.println(e.getMessage());
 		}
 	}
@@ -39,7 +39,7 @@ public class DBConnection {
 	private void Setup() {
 		//TODO: Create database setup scripts/system
 		//Example:
- 		try {
+		try {
 			Statement statement = connection.createStatement();
 			statement.setQueryTimeout(10);  // set timeout to 10 sec.
 
