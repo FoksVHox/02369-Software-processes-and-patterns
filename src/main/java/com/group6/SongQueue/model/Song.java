@@ -37,4 +37,6 @@ public class Song implements Comparable<Song> {
 
     public String getId() { return id; }
 
+    public String getTitle() { return title; }
+
 }
