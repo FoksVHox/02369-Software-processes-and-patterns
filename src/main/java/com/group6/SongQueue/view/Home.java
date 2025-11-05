@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class Home {
 
-    @Value("${test:#{null}}")
-    private String testEnv;
+    @Value("${TESTING_KEY:#{null}}")
+    private String TESTING_KEY;
     
     @GetMapping(path="/")
     public String getHomeView() {
-        System.out.println(testEnv);
+        System.out.println(TESTING_KEY);
         return "home";
     }
 
