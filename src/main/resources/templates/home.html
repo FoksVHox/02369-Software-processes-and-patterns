@@ -1,11 +1,32 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" >
-    <head>
-        <script src="https://cdn.tailwindcss.com"></script>
-    </head>
-    <body>
-        <main class="flex justify-center max-width h-screen">
-            <h1 class="text-2xl">Home</h1>
-        </main>
-    </body>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Spotify Dashboard</title>
+    <style>
+        :root {
+            --spotify-green: #1DB954;
+        }
+    </style>
+</head>
+<body class="bg-[#121212] text-white min-h-screen flex flex-col items-center justify-center font-sans">
+
+<!-- Header -->
+<header class="absolute top-0 left-0 w-full bg-[#181818] border-b border-[#282828] py-4 px-8 flex justify-between items-center">
+    <h1 class="text-xl font-bold text-[var(--spotify-green)]">SongQueue Home</h1>
+    <nav class="flex gap-4 text-gray-300">
+        <a href="/" class="hover:text-[var(--spotify-green)] transition">Home</a>
+        <a href="/dashboard" class="hover:text-[var(--spotify-green)] transition">Dashboard</a>
+        <a href="/login" class="hover:text-red-500 transition">Login</a>
+    </nav>
+</header>
+
+
+<!-- Footer -->
+<footer class="text-gray-500 text-sm mt-10">
+    <p>words</p>
+</footer>
+</body>
 </html>
