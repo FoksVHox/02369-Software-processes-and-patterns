@@ -40,8 +40,6 @@ public class Login {
     @JsonProperty("token_type")
     private String tokenType;
 
-    private String scope;
-
     @JsonProperty("expires_in")
     private long expiresIn;
 
@@ -49,7 +47,7 @@ public class Login {
     private String refreshToken;
 
     private static final String AUTH_URL = "https://accounts.spotify.com/authorize";
-    private static final String SCOPE = "user-read-private user-read-email";
+    private static final String SCOPE = "user-read-private user-read-email user-read-playback-state user-read-currently-playing user-modify-playback-state";
 
     private static final Logger log = LoggerFactory.getLogger(Login.class);
 

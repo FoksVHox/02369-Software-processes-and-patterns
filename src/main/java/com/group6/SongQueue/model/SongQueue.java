@@ -93,4 +93,20 @@ public class SongQueue {
     public List<Song> getSongsInOrder() {
         return Collections.unmodifiableList(songs);
     }
+
+    /**
+     * Gets number of songs in queue.
+     * @return Size of queue
+     */
+    public Integer size() {
+        return songs.size();
+    }
+
+    /**
+     * Gets and removes the next song in the queue.
+     * @return Next song
+     */
+    public Song nextSong() {
+        return songs.removeFirst();
+    }
 }

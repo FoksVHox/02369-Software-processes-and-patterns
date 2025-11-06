@@ -1,10 +1,12 @@
 package com.group6.SongQueue.model;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 /**
  * Represents a song in the queue with voting functionality.
  */
 public class Song implements Comparable<Song> {
-    private final String id;      // Spotify track ID
+	private final String id;      // Spotify track URI
     private final String title;
     private final String artist;
     private int votes;
@@ -14,6 +16,14 @@ public class Song implements Comparable<Song> {
         this.id = id;
         this.title = title;
         this.artist = artist;
+        this.votes = 0;
+        this.timestamp = System.currentTimeMillis();
+    }
+
+    public Song(JsonNode apiItem) {
+        this.id = apiItem.path("uri").asText();
+        this.title = apiItem.path("name").asText("Unknown");
+        this.artist = apiItem.path("artists").elements().next().path("name").asText("Unknown");
         this.votes = 0;
         this.timestamp = System.currentTimeMillis();
     }
@@ -40,4 +50,9 @@ public class Song implements Comparable<Song> {
     public String getTitle() { return title; }
 
     public String getArtist() { return artist; }
+
+    @Override
+    public String toString() {
+    	return String.format("Song(%s): %s by %s. Votes=%d", id, title, artist, votes);
+    }
 }
