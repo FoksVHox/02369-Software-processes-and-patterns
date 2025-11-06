@@ -31,10 +31,27 @@ public class SongQueueController {
 	}
 
 	public void createSongQueue(HttpSession session) {
+		createSongQueue(session, new SongQueue());
+	}
+
+	public void createSongQueue(HttpSession session, SongQueue songQueue) {
 		String accessToken = (String) session.getAttribute("spotify_access_token");
 		if(activeSongQueues.containsKey(accessToken)) return; // A song queue already exists for this access token
 
-		activeSongQueues.put(accessToken, new SongQueue());
+		activeSongQueues.put(accessToken, songQueue);
+	}
+
+	public void deleteSongQueue(HttpSession session) {
+		String accessToken = (String) session.getAttribute("spotify_access_token");
+		if(!activeSongQueues.containsKey(accessToken)) return; // A song queue doesn't exists for this access token
+
+		activeSongQueues.remove(accessToken);
+	}
+
+	public Integer getSongCount(HttpSession session) {
+		String accessToken = (String) session.getAttribute("spotify_access_token");
+		if(!activeSongQueues.containsKey(accessToken)) return -1;
+		return activeSongQueues.get(accessToken).size();
 	}
 
 	public List<Song> getSongsInOrder(HttpSession session) {

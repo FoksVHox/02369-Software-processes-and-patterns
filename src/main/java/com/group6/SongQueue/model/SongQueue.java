@@ -1,6 +1,8 @@
 package com.group6.SongQueue.model;
 
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Manages a queue of songs with voting functionality. Songs are ordered by votes and time added.
@@ -8,14 +10,23 @@ import java.util.*;
  * @see Song
  */
 public class SongQueue {
+	public SongQueue() {
+		songs = new ArrayList<>();
+		songMap = new HashMap<>();
+	}
+	public SongQueue(List<Song> initialSongs) {
+		songs = initialSongs;
+		songMap = initialSongs.stream().collect(Collectors.toMap(Song::getId, Function.identity()));
+	}
+
     /**
      * List of songs in the queue
      */
-    private final List<Song> songs = new ArrayList<>();
+    private final List<Song> songs;
     /**
      * Map of song IDs to Song objects for quick access
      */
-    private final Map<String, Song> songMap = new HashMap<>();
+    private final Map<String, Song> songMap;
 
     /**
      * Adds a new song at the correct position in the queue if it doesn't already exist.
