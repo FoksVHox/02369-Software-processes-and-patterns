@@ -4,14 +4,27 @@
 	<script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
-<main class="flex justify-center max-width h-screen">
-	<div class="flex flex-row">
+<main class="flex flex-col justify-center align-center max-width h-screen">
+	<div class="flex flex-row justify-center">
 		<h1>Welcome, <span th:text="${name}">User</span>!</h1>
 		<p>Email: <span th:text="${email}">unknown</span></p>
 		<p th:if="${profileUrl}">
 			<a th:href="${profileUrl}" target="_blank">View Spotify Profile</a>
 		</p>
 		<p th:if="${error}" style="color: red" th:text="${error}"></p>
+	</div>
+	<div>
+		<form th:if="${songqueue_size < 0}" class="flex flex-col align-center" action="/dashboard/add-playlist" method="post">
+			<fieldset class="flex flex-row justify-center">
+				<label for="playlist-url">Playlist URL:</label>
+				<input name="playlist-url" type="text" placeholder="Place link to public Spotify playlist" />
+			</fieldset>
+			<button type="submit">Add playlist</button>
+		</form>
+		<form th:unless="${songqueue_size < 0}" class="flex flex-col align-center" action="/dashboard/delete-playlist" method="post">
+			<label><span th:text="${songqueue_size}"></span> songs currently in playlist.</label>
+			<button type="submit">Delete songqueue</button>
+		</form>
 	</div>
 </main>
 </body>
