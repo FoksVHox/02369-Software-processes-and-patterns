@@ -1,6 +1,10 @@
 package com.group6.SongQueue.model;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -15,8 +19,8 @@ public class SongQueue {
 		songMap = new HashMap<>();
 	}
 	public SongQueue(List<Song> initialSongs) {
-		songs = initialSongs;
-		songMap = initialSongs.stream().collect(Collectors.toMap(Song::getId, Function.identity()));
+		songMap = initialSongs.stream().collect(Collectors.toMap(Song::getId, Function.identity(), (song1, song2) -> { return song1; }));
+		songs = songMap.values().stream().toList();
 	}
 
     /**
