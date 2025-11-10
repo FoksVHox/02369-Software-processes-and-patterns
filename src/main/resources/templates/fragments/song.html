@@ -1,0 +1,10 @@
+<a th:fragment="song(song)" th:href="${'https://open.spotify.com/track/' + song.getId().replace('spotify:track:','')}" target="_blank" class="flex max-w-2xl bg-gray-900 text-white rounded-lg shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-200 border-l-4 border-green-500 hover:border-green-400">
+    <!-- Image on the left side -->
+    <img th:src="${song.getImageUrl()}" alt="Album art" class="w-32 h-32 object-cover">
+
+    <!-- Text content on the right side -->
+    <div class="p-4 flex flex-col justify-center">
+        <h3 th:text="${song.getTitle()}" class="text-lg font-semibold text-white truncate text-wrap"></h3>
+        <p th:text="${song.getArtist()}" class="text-sm text-gray-400 truncate mt-1 text-wrap"></p>
+    </div>
+</a>

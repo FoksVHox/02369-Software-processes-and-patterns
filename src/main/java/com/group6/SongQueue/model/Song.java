@@ -9,6 +9,7 @@ public class Song implements Comparable<Song> {
 	private final String id;      // Spotify track URI
     private final String title;
     private final String artist;
+    private final String imageUrl;
     private int votes;
     private final long timestamp; // time added, to break ties
 
@@ -16,14 +17,23 @@ public class Song implements Comparable<Song> {
         this.id = id;
         this.title = title;
         this.artist = artist;
+        this.imageUrl = "";
         this.votes = 0;
         this.timestamp = System.currentTimeMillis();
     }
 
     public Song(JsonNode apiItem) {
         this.id = apiItem.path("uri").asText();
+
         this.title = apiItem.path("name").asText("Unknown");
-        this.artist = apiItem.path("artists").elements().next().path("name").asText("Unknown");
+
+        var artists = apiItem.path("artists").elements();
+        StringBuilder artistString = new StringBuilder();
+        while(artists.hasNext()) artistString.append(artists.next().path("name").asText("") + ", ");
+        this.artist = artistString.subSequence(0, artistString.length() - 2).toString();
+
+        this.imageUrl = apiItem.path("album").path("images").elements().next().path("url").asText("");
+
         this.votes = 0;
         this.timestamp = System.currentTimeMillis();
     }
@@ -50,6 +60,8 @@ public class Song implements Comparable<Song> {
     public String getTitle() { return title; }
 
     public String getArtist() { return artist; }
+
+    public String getImageUrl() { return imageUrl; }
 
     @Override
     public String toString() {
