@@ -51,6 +51,17 @@ public class Login {
 
     private static final Logger log = LoggerFactory.getLogger(Login.class);
 
+	/**
+	 * @brief Use for redirecting to login screen
+	 * @param from Url path to go back to after login
+	 * @return Thymeleaf template string
+	 */
+	public static String redirectToLogin(String from, HttpSession session) {
+		session.setAttribute("redirectUrl", from);
+		log.info("Redirecting to /login");
+		return "redirect:/login";
+    }
+
     @GetMapping("/login")
     public ResponseEntity<Void> login() {
         String state = generateState();
@@ -133,6 +144,7 @@ public class Login {
 
             // Store in session
             session.setAttribute("spotify_access_token", accessToken);
+
             if (refreshToken != null) session.setAttribute("spotify_refresh_token", refreshToken);
             if (tokenType != null)    session.setAttribute("spotify_token_type", tokenType);
             if (scope != null)        session.setAttribute("spotify_scope", scope);
@@ -140,11 +152,11 @@ public class Login {
                     Instant.now().plusSeconds(expiresIn));
             session.setAttribute("spotify_logged_in", true);
 
-            // Redirect to /dashboard
+            // Redirect to previous url
+            String previousUrl = (String) session.getAttribute("redirectUrl");
             HttpHeaders redirectHeaders = new HttpHeaders();
-            redirectHeaders.setLocation(URI.create("/dashboard"));
+            redirectHeaders.setLocation(URI.create(previousUrl == null ? "/" : previousUrl));
             return new ResponseEntity<>(redirectHeaders, HttpStatus.FOUND);
-
         } catch (Exception ex) {
             log.error("Failed to exchange code for token", ex);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

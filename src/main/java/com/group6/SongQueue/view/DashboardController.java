@@ -38,11 +38,7 @@ public class DashboardController {
 	@GetMapping("")
 	public String dashboard(HttpSession session, Model model) {
 		String accessToken = (String) session.getAttribute("spotify_access_token");
-
-		if (accessToken == null) {
-			log.info("No Spotify session found, redirecting to /login");
-			return "redirect:/login";
-		}
+		if (accessToken == null) return Login.redirectToLogin("/dashboard", session);
 
 		try {
 			RestTemplate rest = new RestTemplate();
