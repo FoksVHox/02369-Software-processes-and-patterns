@@ -18,9 +18,11 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Controller
@@ -82,5 +84,43 @@ public class Search {
 			model.addAttribute("songs", new ArrayList<>());
 			return "search";
 		}
+	}
+
+	@PostMapping("/add")
+	public String addSong(@RequestParam(name = "id", required = true) String songId, @RequestParam(name = "query", required = true) String searchQuery, HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+		String accessToken = (String) session.getAttribute("spotify_access_token");
+		if (accessToken == null) return Login.redirectToLogin("/search?query=" + (searchQuery == null ? "" : searchQuery), session);
+
+		redirectAttributes.addAttribute("query", searchQuery);
+
+		// Fetch song info from spotify
+		Song song;
+		try {
+			RestTemplate rest = new RestTemplate();
+			HttpHeaders headers = new HttpHeaders();
+			headers.setBearerAuth(accessToken);
+			headers.setAccept(java.util.List.of(MediaType.APPLICATION_JSON));
+
+			HttpEntity<Void> request = new HttpEntity<>(headers);
+			ResponseEntity<String> response = rest.exchange("https://api.spotify.com/v1/tracks/" + songId.substring("spotify:track:".length()), HttpMethod.GET, request, String.class);
+			if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) throw new Exception("HTTP Status: {}");
+
+			ObjectMapper mapper = new ObjectMapper();
+			song = new Song(mapper.readTree(response.getBody()));
+		} catch (Exception ex) {
+			log.error("Failed to fetch Spotify song.", ex);
+			redirectAttributes.addFlashAttribute("error", "Failed to fetch Spotify song. Please try again.");
+			return "redirect:/search";
+		}
+
+		// Add song to song queue
+		if(songQueueController.getSongCount(session) >= 0) {
+			songQueueController.addSong(session, song);
+			redirectAttributes.addFlashAttribute("addedSong", "Succesfully added " + song.getTitle() + " to song queue.");
+		} else {
+			redirectAttributes.addFlashAttribute("error", "No active song queue to add song to.");
+		}
+
+		return "redirect:/search";
 	}
 }
