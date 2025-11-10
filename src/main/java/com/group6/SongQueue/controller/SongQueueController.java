@@ -85,6 +85,8 @@ public class SongQueueController {
 				ResponseEntity<String> response = rest.exchange(
 						"https://api.spotify.com/v1/me/player", HttpMethod.GET, request, String.class);
 
+				if (response.getStatusCode().value() == 204) return; // Not playing, nothing to control
+
 				if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
 					throw new Exception("HTTP error (" + response.getStatusCode() + ")" + response.getBody());
 				}

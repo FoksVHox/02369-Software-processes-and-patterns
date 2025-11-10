@@ -36,7 +36,7 @@ public class Search {
 	@GetMapping("")
 	public String search(@RequestParam(name = "query", required = false) String searchQuery, HttpSession session, Model model) {
 		String accessToken = (String) session.getAttribute("spotify_access_token");
-		if (accessToken == null) return Login.redirectToLogin("/search?query=" + (searchQuery == null ? "" : searchQuery), session);
+		if (accessToken == null) return Login.redirectToLogin("/search" + (searchQuery == null ? "" : "?query=" + searchQuery), session);
 
 		if(searchQuery == null || searchQuery == "") {
 			model.addAttribute("songs", new ArrayList<>());
@@ -61,13 +61,7 @@ public class Search {
                 .toUriString();
 
 			ResponseEntity<String> response = rest.exchange(url, HttpMethod.GET, request, String.class);
-
-			if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
-				log.warn("Failed to search Spotify for songs. Status: {}", response.getStatusCode());
-				model.addAttribute("error", "Failed to search Spotify for songs. Please try again.");
-				model.addAttribute("songs", new ArrayList<>());
-				return "search";
-			}
+			if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) throw new Exception("HTTP Status: {}");
 
 			ObjectMapper mapper = new ObjectMapper();
 			JsonNode json = mapper.readTree(response.getBody()).path("tracks");
@@ -84,7 +78,7 @@ public class Search {
 
 		} catch (Exception ex) {
 			log.error("Error searching Spotify", ex);
-			model.addAttribute("error", "Error seaching Spotify: " + ex.getMessage());
+			model.addAttribute("error", "Error seaching Spotify for songs.");
 			model.addAttribute("songs", new ArrayList<>());
 			return "search";
 		}

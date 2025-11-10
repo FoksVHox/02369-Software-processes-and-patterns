@@ -13,16 +13,7 @@
 </head>
 <body class="bg-[#121212] text-white min-h-screen flex flex-col items-center justify-center font-sans">
 
-<!-- Header -->
-<header class="absolute top-0 left-0 w-full bg-[#181818] border-b border-[#282828] py-4 px-8 flex justify-between items-center">
-    <h1 class="text-xl font-bold text-[var(--spotify-green)]">SongQueue Home</h1>
-    <nav class="flex gap-4 text-gray-300">
-        <a href="/" class="hover:text-[var(--spotify-green)] transition">Home</a>
-        <a href="/dashboard" class="hover:text-[var(--spotify-green)] transition">Dashboard</a>
-        <a href="/login" class="hover:text-red-500 transition">Login</a>
-    </nav>
-</header>
-
+<header th:replace="~{fragments/header::header}"></header>
 
 <!-- Footer -->
 <footer class="text-gray-500 text-sm mt-10">

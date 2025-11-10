@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Controller
@@ -52,11 +53,7 @@ public class DashboardController {
 			ResponseEntity<String> response = rest.exchange(
 					SPOTIFY_ME_URL, HttpMethod.GET, request, String.class);
 
-			if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
-				log.warn("Failed to fetch Spotify profile. Status: {}", response.getStatusCode());
-				model.addAttribute("error", "Unable to fetch Spotify profile. Please re-login.");
-				return "dashboard";
-			}
+			if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) throw new Exception("HTTP Status: {}");
 
 			ObjectMapper mapper = new ObjectMapper();
 			JsonNode json = mapper.readTree(response.getBody());
@@ -74,18 +71,15 @@ public class DashboardController {
 
 		} catch (Exception ex) {
 			log.error("Error fetching Spotify user info", ex);
-			model.addAttribute("error", "Error fetching Spotify profile: " + ex.getMessage());
+			model.addAttribute("error", "Error fetching Spotify profile.");
 			return "dashboard";
 		}
 	}
 
 	@PostMapping("/add-playlist")
-	public String addPlaylist(@RequestParam("playlist-url") String playlistUrl, HttpSession session, Model model) {
+	public String addPlaylist(@RequestParam("playlist-url") String playlistUrl, HttpSession session, Model model, RedirectAttributes redirectAttributes) {
 		String accessToken = (String) session.getAttribute("spotify_access_token");
-		if (accessToken == null) {
-			log.info("No Spotify session found, redirecting to /login");
-			return "redirect:/login";
-		}
+		if (accessToken == null) return Login.redirectToLogin("/dashboard", session);
 
 		// Retrieve playlist from Spotify
 		List<Song> songs = new ArrayList<>();
@@ -107,9 +101,9 @@ public class DashboardController {
 				.build()
 				.toUriString(),
 				HttpMethod.GET, request, String.class);
-			if (!totalResponse.getStatusCode().is2xxSuccessful() || totalResponse.getBody() == null) {
+			if (!totalResponse.getStatusCode().is2xxSuccessful() || totalResponse.getBody() == null)
 				throw new Exception("HTTP error (" + totalResponse.getStatusCode() + ")" + totalResponse.getBody());
-			}
+
 			Integer totalSongs = new ObjectMapper().readTree(totalResponse.getBody()).path("total").asInt(0);
 
 			// Get all songs
@@ -121,9 +115,8 @@ public class DashboardController {
 					.build()
 					.toUriString();
 				ResponseEntity<String> response = rest.exchange(paramUrl, HttpMethod.GET, request, String.class);
-				if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
+				if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null)
 					throw new Exception("HTTP error (" + response.getStatusCode() + ")" + response.getBody());
-				}
 
 				ObjectMapper mapper = new ObjectMapper();
 				JsonNode json = mapper.readTree(response.getBody());
@@ -135,8 +128,9 @@ public class DashboardController {
 			}
 			System.out.println(songs.size() + " songs found.");
 		} catch (Exception ex) {
-			model.addAttribute("error", "Error fetching Spotify playlist: " + ex.getMessage());
-			return dashboard(session, model);
+			log.error("Error fetching Spotify playlist.", ex);
+			redirectAttributes.addFlashAttribute("error", "Failed to find Spotify playlist. Make sure it is public.");
+			return "redirect:/dashboard";
 		}
 
 		// Initialize songqueue with playlist
@@ -146,13 +140,22 @@ public class DashboardController {
 		return "redirect:/dashboard";
 	}
 
+	@PostMapping("/create-songqueue")
+	public String createSongqueue(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+		String accessToken = (String) session.getAttribute("spotify_access_token");
+		if (accessToken == null) return Login.redirectToLogin("/dashboard", session);
+
+		// Initialize songqueue
+		songQueueController.createSongQueue(session, new SongQueue());
+
+		// Return to dashboard
+		return "redirect:/dashboard";
+	}
+
 	@PostMapping("/delete-playlist")
 	public String deletePlaylist(HttpSession session, Model model) {
 		String accessToken = (String) session.getAttribute("spotify_access_token");
-		if (accessToken == null) {
-			log.info("No Spotify session found, redirecting to /login");
-			return "redirect:/login";
-		}
+		if (accessToken == null) return Login.redirectToLogin("/dashboard", session);
 
 		songQueueController.deleteSongQueue(session);
 
