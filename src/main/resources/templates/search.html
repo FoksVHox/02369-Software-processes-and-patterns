@@ -3,15 +3,15 @@
 <head>
 	<script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-<main class="flex flex-col justify-start items-center max-width h-screen">
+<body class="bg-[#121212] text-white font-sans max-width">
+<main class="bg-[#181818] shadow-lg rounded-2xl p-10 flex flex-col items-center max-width h-screen gap-6 text-center border border-[#282828]">
 	<div class="flex flex-col justify-center items-center max-width my-8">
-		<form action="" method="get" class="flex flex-row justify-center items-center max-w-2xl mx-auto bg-gray-900 rounded-lg p-2 shadow-md hover:shadow-lg transition-shadow duration-200">
+		<form action="" method="get" class="flex flex-row justify-center items-center max-w-2xl mx-auto rounded-lg p-2">
 		    <input type="text" name="query" placeholder="Search for a song..." class="p-2 w-full rounded-l-lg border border-gray-600 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-green-500 placeholder-gray-400 hover:bg-gray-700 transition-all duration-200" th:value="${query}">
 		    <button type="submit" class="bg-green-500 text-white p-2 rounded-r-lg hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors duration-200">
-        	Search
-    </button>
-</form>
+		        Search
+		    </button>
+		</form>
 		<p th:if="${error}" style="color: red" th:text="${error}"></p>
 	</div>
 	<div th:if="${songs.size() > 0}" class="flex flex-col justify-start align-center gap-2 w-fit h-full overflow-y-scroll">
