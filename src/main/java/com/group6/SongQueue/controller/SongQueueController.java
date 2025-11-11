@@ -145,4 +145,15 @@ public class SongQueueController {
 			}
 		}
 	}
+
+	public Song getCurrentlyPlayingSong(HttpSession session) {
+		String accessToken = (String) session.getAttribute("spotify_access_token");
+		if (accessToken == null) return null;
+		SongQueue queue = activeSongQueues.get(accessToken);
+		if (queue != null) {
+			return queue.getCurrentlyPlayingSong();
+		}
+		log.warn("No active song queue for access token: {}", accessToken);
+		return null;
+	}
 }

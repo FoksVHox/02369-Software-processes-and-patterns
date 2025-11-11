@@ -23,42 +23,16 @@
     <!-- Error Message -->
     <p th:if="${error}" class="text-center text-red-500 italic py-4" th:text="${error}"></p>
 
+    <!-- Currently Playing -->
+    <div id="current-playing-container" th:insert="~{fragments/currentlyPlaying :: currentlyPlaying}"></div>
+
     <!-- Song List -->
-    <div class="flex flex-col divide-y divide-[#282828]" id="song-list" th:if="${!#lists.isEmpty(songqueue)}">
+    <div id="song-list-container" th:insert="~{fragments/songlist :: songlist}"></div>
 
-        <!-- Thymeleaf Loop -->
-        <div th:each="song : ${songqueue}"
-             class="flex items-center justify-between py-4 hover:bg-[#232323] px-3 rounded-lg transition">
-
-            <!-- Song Info -->
-            <div class="flex flex-col">
-                <h2 th:text="${song.getTitle()}" class="font-semibold">Song Title</h2>
-                <p th:text="${song.getArtist()}" class="text-gray-400 text-sm">Artist Name</p>
-            </div>
-
-            <!-- Vote Buttons -->
-            <div class="flex items-center gap-3">
-                <form th:action="@{/vote}" method="post" class="flex items-center gap-2">
-                    <input type="hidden" name="songId" th:value="${song.getId()}" />
-                    <button type="submit" name="vote" value="up" class="text-[var(--spotify-green)] hover:scale-110 transition">▲</button>
-                </form>
-
-                <span class="vote-count text-lg font-semibold" th:text="${song.getVotes()}">0</span>
-
-                <form th:action="@{/vote}" method="post" class="flex items-center gap-2">
-                    <input type="hidden" name="songId" th:value="${song.getId()}" />
-                    <button type="submit" name="vote" value="down" class="text-red-500 hover:scale-110 transition">▼</button>
-                </form>
-
-            </div>
-        </div>
-    </div>
-
-    <!-- Empty State -->
-    <p th:if="${#lists.isEmpty(songqueue)}" class="text-center text-gray-500 italic py-4">
-        No songs in queue yet. Add a playlist on the dashboard first!
-    </p>
 
 </main>
+
+<script src="/js/vote.js"></script>
+
 </body>
 </html>
