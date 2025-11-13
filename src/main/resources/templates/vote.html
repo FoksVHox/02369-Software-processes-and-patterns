@@ -12,6 +12,9 @@
     </style>
 </head>
 <body class="bg-[#121212] text-white flex flex-col items-center justify-center min-h-screen font-sans">
+
+<header th:replace="~{fragments/header::header}"></header>
+
 <main class="bg-[#181818] shadow-lg rounded-2xl p-8 w-full max-w-4xl flex flex-col gap-6 border border-[#282828]">
 
     <!-- Header -->
@@ -20,16 +23,13 @@
         <p class="text-gray-400">Vote on the best tracks</p>
     </div>
 
-    <!-- Error Message -->
-    <p th:if="${error}" class="text-center text-red-500 italic py-4" th:text="${error}"></p>
-
     <!-- Currently Playing -->
     <div id="current-playing-container" th:insert="~{fragments/currentlyPlaying :: currentlyPlaying}"></div>
 
     <!-- Song List -->
     <div id="song-list-container" th:insert="~{fragments/songlist :: songlist}"></div>
 
-
+    <div th:replace="~{fragments/notification::error(${error})}"></div>
 </main>
 
 <script src="/js/vote.js"></script>

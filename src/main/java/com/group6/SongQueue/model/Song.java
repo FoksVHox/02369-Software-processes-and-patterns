@@ -21,7 +21,6 @@ public class Song implements Comparable<Song> {
         this.id = id;
         this.title = title;
         this.artist = artist;
-        this.imageUrl = "";
         this.votes = 0;
         this.timestamp = System.currentTimeMillis();
         this.albumArtUrl = albumArtURL;
@@ -36,8 +35,6 @@ public class Song implements Comparable<Song> {
         StringBuilder artistString = new StringBuilder();
         while(artists.hasNext()) artistString.append(artists.next().path("name").asText("") + ", ");
         this.artist = artistString.subSequence(0, artistString.length() - 2).toString();
-
-        this.imageUrl = apiItem.path("album").path("images").elements().next().path("url").asText("");
 
         this.votes = 0;
         this.timestamp = System.currentTimeMillis();
