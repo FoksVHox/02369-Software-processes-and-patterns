@@ -140,6 +140,8 @@ public class Login {
             if (accessToken == null) {
                 log.error("Spotify response missing access_token: {}", spotifyResponse.getBody());
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            } else {
+                if (redirectUri.contains("localhost")) System.out.println("Spotify access token = " + accessToken);
             }
 
             // Store in session

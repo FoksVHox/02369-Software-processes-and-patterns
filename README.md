@@ -11,3 +11,6 @@ To run tests:
 ```sh
 mvn verify
 ```
+
+> ![note] Spotify authentication
+> Some tests requires access to spotify, so make sure there is a TEST_ACCESS_TOKEN entry in the .env file with an active spotify access token (printed in console when logging in while debugging)

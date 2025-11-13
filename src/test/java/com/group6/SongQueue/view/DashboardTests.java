@@ -2,6 +2,7 @@ package com.group6.SongQueue.view;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ import org.springframework.web.servlet.ModelAndView;
 @SpringBootTest
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
-public class ExampleViewTest {
+public class DashboardTests {
 
     @Value("${TEST_ACCESS_TOKEN:internalToken}")
     private String accessToken;
@@ -37,17 +38,19 @@ public class ExampleViewTest {
     }
 
     @Test
-    void testHome() throws Exception {
+    void testNoSongqueue() throws Exception {
         MvcResult result = mockMvc.perform(
-                get("/").session(session)
+                get("/dashboard").session(session)
             )
             .andExpect(status().isOk())
             .andReturn();
 
         ModelAndView modelView = result.getModelAndView();
         assertNotNull(modelView);
+        var model = modelView.getModel();
 
-        assertEquals(0, modelView.getModel().size());
+        assertTrue(model.containsKey("name"));
+        assertEquals(-1, ((Integer)model.get("songqueue_size")).intValue());
     }
 
 }
