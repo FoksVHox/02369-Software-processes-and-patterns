@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.List;
 
 
-public class SongQueueTests {
+class SongQueueTests {
 
     private SongQueue queue;
 
@@ -18,7 +18,7 @@ public class SongQueueTests {
 
     @Test
     void testAddSong() {
-        Song song = new Song("1", "Song A", "Artist A");
+        Song song = new Song("1", "Song A", "Artist A", null);
         queue.addSong(song);
 
         List<Song> songs = queue.getSongsInOrder();
@@ -28,8 +28,8 @@ public class SongQueueTests {
 
     @Test
     void testUpvoteMovesSongUp() {
-        Song s1 = new Song("1", "A", "Artist");
-        Song s2 = new Song("2", "B", "Artist");
+        Song s1 = new Song("1", "A", "Artist", null);
+        Song s2 = new Song("2", "B", "Artist", null);
         queue.addSong(s1);
         queue.addSong(s2);
 
@@ -43,8 +43,8 @@ public class SongQueueTests {
 
     @Test
     void testDownvoteMovesSongDown() {
-        Song s1 = new Song("1", "A", "Artist");
-        Song s2 = new Song("2", "B", "Artist");
+        Song s1 = new Song("1", "A", "Artist", null);
+        Song s2 = new Song("2", "B", "Artist", null);
         queue.addSong(s1);
         queue.addSong(s2);
 
@@ -58,9 +58,9 @@ public class SongQueueTests {
 
     @Test
     void testTiesResolvedByTimestamp() throws InterruptedException {
-        Song s1 = new Song("1", "First", "Artist");
+        Song s1 = new Song("1", "First", "Artist", null);
         Thread.sleep(5); // ensure timestamp difference
-        Song s2 = new Song("2", "Second", "Artist");
+        Song s2 = new Song("2", "Second", "Artist", null);
 
         queue.addSong(s1);
         queue.addSong(s2);
@@ -81,9 +81,9 @@ public class SongQueueTests {
 
     @Test
     void testMultipleVotesAffectOrder() {
-        Song s1 = new Song("1", "A", "Artist");
-        Song s2 = new Song("2", "B", "Artist");
-        Song s3 = new Song("3", "C", "Artist");
+        Song s1 = new Song("1", "A", "Artist", null);
+        Song s2 = new Song("2", "B", "Artist", null);
+        Song s3 = new Song("3", "C", "Artist", null);
 
         queue.addSong(s1);
         queue.addSong(s2);
@@ -103,7 +103,7 @@ public class SongQueueTests {
 
     @Test
     void testDownvotingBelowZero() {
-        Song s = new Song("1", "Sad Song", "Artist");
+        Song s = new Song("1", "Sad Song", "Artist", null);
         queue.addSong(s);
         queue.downvoteSong("1");
         queue.downvoteSong("1");
@@ -115,9 +115,9 @@ public class SongQueueTests {
 
     @Test
     void testRemoveSong() {
-        Song s1 = new Song("1", "A", "Artist");
-        Song s2 = new Song("2", "B", "Artist");
-        Song s3 = new Song("3", "C", "Artist");
+        Song s1 = new Song("1", "A", "Artist", null);
+        Song s2 = new Song("2", "B", "Artist", null);
+        Song s3 = new Song("3", "C", "Artist", null);
 
         queue.addSong(s1);
         queue.addSong(s2);

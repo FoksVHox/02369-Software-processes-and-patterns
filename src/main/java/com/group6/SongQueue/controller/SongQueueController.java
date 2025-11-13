@@ -64,6 +64,22 @@ public class SongQueueController {
 		activeSongQueues.get(accessToken).addSong(song);
 	}
 
+	public void upvoteSong(HttpSession session, String songId) {
+		String accessToken = (String) session.getAttribute("spotify_access_token");
+		SongQueue queue = activeSongQueues.get(accessToken);
+		if (queue != null) {
+			queue.upvoteSong(songId);
+		}
+	}
+
+	public void downvoteSong(HttpSession session, String songId) {
+		String accessToken = (String) session.getAttribute("spotify_access_token");
+		SongQueue queue = activeSongQueues.get(accessToken);
+		if (queue != null) {
+			queue.downvoteSong(songId);
+		}
+	}
+
 	private static final int REFRESH_DELAY = 5000;
 	@Scheduled(fixedDelay = REFRESH_DELAY)
 	private void updateSpotifyPlayback() {
@@ -128,5 +144,16 @@ public class SongQueueController {
 				continue;
 			}
 		}
+	}
+
+	public Song getCurrentlyPlayingSong(HttpSession session) {
+		String accessToken = (String) session.getAttribute("spotify_access_token");
+		if (accessToken == null) return null;
+		SongQueue queue = activeSongQueues.get(accessToken);
+		if (queue != null) {
+			return queue.getCurrentlyPlayingSong();
+		}
+		log.warn("No active song queue for access token: {}", accessToken);
+		return null;
 	}
 }

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Song Queue</title>
+    <style>
+        :root {
+            --spotify-green: #1DB954;
+        }
+    </style>
+</head>
+<body class="bg-[#121212] text-white flex flex-col items-center justify-center min-h-screen font-sans">
+<main class="bg-[#181818] shadow-lg rounded-2xl p-8 w-full max-w-4xl flex flex-col gap-6 border border-[#282828]">
+
+    <!-- Header -->
+    <div class="text-center">
+        <h1 class="text-3xl font-bold text-[var(--spotify-green)]">Song Queue</h1>
+        <p class="text-gray-400">Vote on the best tracks</p>
+    </div>
+
+    <!-- Error Message -->
+    <p th:if="${error}" class="text-center text-red-500 italic py-4" th:text="${error}"></p>
+
+    <!-- Currently Playing -->
+    <div id="current-playing-container" th:insert="~{fragments/currentlyPlaying :: currentlyPlaying}"></div>
+
+    <!-- Song List -->
+    <div id="song-list-container" th:insert="~{fragments/songlist :: songlist}"></div>
+
+
+</main>
+
+<script src="/js/vote.js"></script>
+
+</body>
+</html>
