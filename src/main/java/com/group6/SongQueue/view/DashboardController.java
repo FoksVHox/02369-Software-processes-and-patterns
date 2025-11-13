@@ -71,6 +71,7 @@ public class DashboardController {
 			model.addAttribute("name", displayName);
 			model.addAttribute("email", email);
 			model.addAttribute("profileUrl", profileUrl);
+            model.addAttribute("sessionCode", 1984); // Placeholder session code
 
 			model.addAttribute("songqueue_size", songQueueController.getSongCount(session));
 

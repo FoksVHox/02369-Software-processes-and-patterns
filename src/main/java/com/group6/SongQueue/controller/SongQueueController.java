@@ -25,6 +25,7 @@ public class SongQueueController {
 
 	private static final Logger log = LoggerFactory.getLogger(SongQueueController.class);
 	private Map<String, SongQueue> activeSongQueues;
+    public JoinSessionController sessionController = new JoinSessionController();
 
 	SongQueueController() {
 		activeSongQueues = new HashMap<String, SongQueue>();
@@ -37,14 +38,16 @@ public class SongQueueController {
 	public void createSongQueue(HttpSession session, SongQueue songQueue) {
 		String accessToken = (String) session.getAttribute("spotify_access_token");
 		if(activeSongQueues.containsKey(accessToken)) return; // A song queue already exists for this access token
-
+        /* TODO: Tilføj int af sessionen her. aka kald min start funktion*/
+        sessionController.startJoinSession();
+        System.out.println(sessionController.getSessionCode());
 		activeSongQueues.put(accessToken, songQueue);
 	}
 
 	public void deleteSongQueue(HttpSession session) {
 		String accessToken = (String) session.getAttribute("spotify_access_token");
 		if(!activeSongQueues.containsKey(accessToken)) return; // A song queue doesn't exists for this access token
-
+        /* TODO: Slet sessionen igen*/
 		activeSongQueues.remove(accessToken);
 	}
 

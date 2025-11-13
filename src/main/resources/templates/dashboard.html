@@ -15,6 +15,7 @@
 <body class="bg-[#121212] text-white flex items-center justify-center h-screen font-sans">
 <main class="bg-[#181818] shadow-lg rounded-2xl p-10 w-full max-w-md flex flex-col gap-6 text-center border border-[#282828]">
 
+    <!-- User Info -->
 	<div>
 		<h1 class="text-3xl font-bold mb-2">
 			Welcome, <span th:text="${name}" class="text-[var(--spotify-green)]">User</span>!
@@ -31,6 +32,13 @@
 		<p th:if="${error}" th:text="${error}" class="text-red-500 mt-2 font-semibold"></p>
 	</div>
 
+    <!-- Session code-->
+    <div th:if="${sessionCode != null && sessionCode != -1 }">
+        <h1 class="text-gray-400 text-sm mb-4">
+            Session Code: <span th:text="${sessionCode}">N/A</span>
+        </h1>
+    </div>
+
 	<!-- Playlist Forms -->
 	<div>
 		<!-- Add Playlist -->
@@ -44,7 +52,8 @@
 					   name="playlist-url"
 					   type="text"
 					   placeholder="Paste your public Spotify playlist link"
-					   class="bg-[#282828] text-white border border-[#3e3e3e] rounded-lg px-3 py-2 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--spotify-green)]" />
+					   class="bg-[#282828] text-white border border-[#3e3e3e] rounded-lg px-3 py-2 placeholder-gray-500
+					          focus:outline-none focus:ring-2 focus:ring-[var(--spotify-green)]" />
 			</fieldset>
 			<button type="submit"
 					class="bg-[var(--spotify-green)] text-black font-semibold py-2 rounded-lg hover:bg-[#1ed760] transition">
