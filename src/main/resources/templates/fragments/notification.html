@@ -1,0 +1,22 @@
+<div th:fragment="notification(message,type)" class="fixed bottom-4 right-4 max-w-sm w-full z-50">
+    <div th:class="${
+	        (type == 'success' ? 'bg-green-500 text-white' : '') +
+	        (type == 'error' ? 'bg-red-500 text-white' : '') +
+	        (type == 'info' ? 'bg-blue-500 text-white' : '') +
+	        (type == 'warning' ? 'bg-yellow-500 text-black' : '') +
+	        ' p-2 rounded-lg shadow-lg flex items-center space-x-4 transition-transform transform-gpu'
+        }" role="alert">
+
+        <!-- Notification text -->
+        <div class="w-full align-center text-center">
+            <p class="font-semibold text-lg" th:text="${type.toUpperCase()}"></p>
+            <p th:text="${message}" class="mt-1 text-sm"></p>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="error(message)">
+	<div th:if="${message}">
+		<div th:replace="~{fragments/notification::notification(${message},'error')}"></div>
+	</div>
+</div>
