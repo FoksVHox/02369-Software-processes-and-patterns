@@ -33,6 +33,11 @@ public class SongQueue {
     private final Map<String, Song> songMap;
 
     /**
+     * The currently playing song (not in the queue)
+     */
+    private Song currentlyPlayingSong = null;
+
+    /**
      * Adds a new song at the correct position in the queue if it doesn't already exist.
      * @param song The song to add
      */
@@ -122,6 +127,11 @@ public class SongQueue {
      * @return Next song
      */
     public Song nextSong() {
-        return songs.removeFirst();
+        currentlyPlayingSong = songs.removeFirst();
+        return currentlyPlayingSong;
+    }
+
+    public Song getCurrentlyPlayingSong() {
+        return currentlyPlayingSong;
     }
 }

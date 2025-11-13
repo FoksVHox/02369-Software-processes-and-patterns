@@ -1,25 +1,30 @@
 package com.group6.SongQueue.model;
 
 import com.fasterxml.jackson.databind.JsonNode;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Represents a song in the queue with voting functionality.
  */
 public class Song implements Comparable<Song> {
-	private final String id;      // Spotify track URI
+    private static final Logger log = LoggerFactory.getLogger(Song.class);
+
+    private final String id;      // Spotify track URI
     private final String title;
     private final String artist;
-    private final String imageUrl;
+
     private int votes;
     private final long timestamp; // time added, to break ties
+    private final String albumArtUrl;
 
-    public Song(String id, String title, String artist) {
+    public Song(String id, String title, String artist, String albumArtURL) {
         this.id = id;
         this.title = title;
         this.artist = artist;
         this.imageUrl = "";
         this.votes = 0;
         this.timestamp = System.currentTimeMillis();
+        this.albumArtUrl = albumArtURL;
     }
 
     public Song(JsonNode apiItem) {
@@ -36,6 +41,18 @@ public class Song implements Comparable<Song> {
 
         this.votes = 0;
         this.timestamp = System.currentTimeMillis();
+
+        // extract album art URL from album.images[0].url (highest resolution)
+        JsonNode images = apiItem.path("album").path("images");
+        String art = null;
+        if (images.isArray() && !images.isEmpty()) {
+            art = images.get(0).path("url").asText(null);
+            if (art == null || art.isEmpty()) {
+                log.warn("No album art found for track id={} title={}", this.id, this.title);
+                art = null;
+            }
+        }
+        this.albumArtUrl = art;
     }
 
     // Voting methods
@@ -61,7 +78,7 @@ public class Song implements Comparable<Song> {
 
     public String getArtist() { return artist; }
 
-    public String getImageUrl() { return imageUrl; }
+    public String getAlbumArtUrl() { return albumArtUrl; }
 
     @Override
     public String toString() {

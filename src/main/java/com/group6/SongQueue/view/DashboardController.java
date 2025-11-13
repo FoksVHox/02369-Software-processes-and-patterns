@@ -111,7 +111,7 @@ public class DashboardController {
 				String paramUrl = UriComponentsBuilder.fromUriString(url)
 					.queryParam("offset", songs.size())
 					.queryParam("limit", 50)
-					.queryParam("fields", "items(track(artists,name,uri))")
+					.queryParam("fields", "items(track(artists,name,uri,album(images(url))))")
 					.build()
 					.toUriString();
 				ResponseEntity<String> response = rest.exchange(paramUrl, HttpMethod.GET, request, String.class);

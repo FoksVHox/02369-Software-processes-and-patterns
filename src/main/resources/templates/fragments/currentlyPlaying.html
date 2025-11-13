@@ -1,0 +1,20 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="currentlyPlaying">
+  <div th:if="${currentSong != null}" class="mb-4 p-4 bg-[#141414] rounded-lg border border-[#2b2b2b] flex items-center gap-4">
+    <div class="flex items-center gap-4">
+      <img th:if="${currentSong.getAlbumArtUrl() != null}" th:src="${currentSong.getAlbumArtUrl()}"
+           alt="Currently Playing Album Art" class="w-20 h-20 rounded-lg object-cover" />
+      <div th:if="${currentSong.getAlbumArtUrl() == null}" class="w-20 h-20 rounded-lg bg-[#2a2a2a] flex items-center justify-center">
+        <span class="text-sm text-gray-400">No art</span>
+      </div>
+    </div>
+    <div class="flex flex-col">
+      <h2 th:text="${currentSong.getTitle()}" class="text-xl font-bold text-[var(--spotify-green)]">Currently Playing</h2>
+      <p th:text="${currentSong.getArtist()}" class="text-gray-400">Artist</p>
+
+      <span class="vote-count text-lg font-semibold" th:text="'Won with ' + ${currentSong.getVotes() + ' votes'}">Won with 0 votes</span>
+    </div>
+  </div>
+</div>
+</html>
