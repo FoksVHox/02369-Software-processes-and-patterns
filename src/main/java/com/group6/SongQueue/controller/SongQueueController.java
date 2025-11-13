@@ -24,10 +24,10 @@ import org.springframework.http.*;
 public class SongQueueController {
 
 	private static final Logger log = LoggerFactory.getLogger(SongQueueController.class);
-	private Map<String, SongQueue> activeSongQueues;
+	private final Map<String, SongQueue> activeSongQueues;
 
 	SongQueueController() {
-		activeSongQueues = new HashMap<String, SongQueue>();
+		activeSongQueues = new HashMap<>();
 	}
 
 	public void createSongQueue(HttpSession session) {
@@ -143,7 +143,6 @@ public class SongQueueController {
 				}
 			} catch (Exception err) {
 				log.warn("Failed to add song to queue Spotify playback state. Error: {}", err.getMessage());
-				continue;
 			}
 		}
 	}

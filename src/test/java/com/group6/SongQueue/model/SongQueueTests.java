@@ -24,6 +24,8 @@ class SongQueueTests {
         List<Song> songs = queue.getSongsInOrder();
         assertEquals(1, songs.size());
         assertEquals("Song A", songs.get(0).getTitle());
+        assertEquals("Artist A", songs.get(0).getArtist());
+        assertEquals(null, songs.get(0).getAlbumArtUrl());
     }
 
     @Test

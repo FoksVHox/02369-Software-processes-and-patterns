@@ -21,6 +21,7 @@ public class SongQueue {
 	public SongQueue(List<Song> initialSongs) {
 		songMap = initialSongs.stream().collect(Collectors.toMap(Song::getId, Function.identity(), (song1, song2) -> { return song1; }));
         songs = new ArrayList<>(songMap.values());
+        songs.sort(null);
 	}
 
     /**
