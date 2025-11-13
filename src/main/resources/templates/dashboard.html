@@ -13,6 +13,9 @@
 	</style>
 </head>
 <body class="bg-[#121212] text-white flex items-center justify-center h-screen font-sans">
+
+<header th:replace="~{fragments/header::header}"></header>
+
 <main class="bg-[#181818] shadow-lg rounded-2xl p-10 w-full max-w-md flex flex-col gap-6 text-center border border-[#282828]">
 
     <!-- User Info -->
@@ -29,7 +32,6 @@
 				View Spotify Profile
 			</a>
 		</p>
-		<p th:if="${error}" th:text="${error}" class="text-red-500 mt-2 font-semibold"></p>
 	</div>
 
     <!-- Session code-->
@@ -42,24 +44,32 @@
 	<!-- Playlist Forms -->
 	<div>
 		<!-- Add Playlist -->
-		<form th:if="${songqueue_size < 0}"
-			  class="flex flex-col gap-4"
-			  action="/dashboard/add-playlist"
-			  method="post">
-			<fieldset class="flex flex-col gap-2 text-left">
-				<label for="playlist-url" class="font-semibold text-gray-200">Playlist URL:</label>
-				<input id="playlist-url"
-					   name="playlist-url"
-					   type="text"
-					   placeholder="Paste your public Spotify playlist link"
-					   class="bg-[#282828] text-white border border-[#3e3e3e] rounded-lg px-3 py-2 placeholder-gray-500
-					          focus:outline-none focus:ring-2 focus:ring-[var(--spotify-green)]" />
-			</fieldset>
-			<button type="submit"
-					class="bg-[var(--spotify-green)] text-black font-semibold py-2 rounded-lg hover:bg-[#1ed760] transition">
-				Add Playlist
-			</button>
-		</form>
+		<div th:if="${songqueue_size < 0}" class="flex flex-col gap-4">
+			<form class="flex flex-col gap-2"
+				  action="/dashboard/add-playlist"
+				  method="post">
+				<fieldset class="flex flex-col gap-2 text-left">
+					<label for="playlist-url" class="font-semibold text-gray-200">Playlist URL:</label>
+					<input id="playlist-url"
+						   name="playlist-url"
+						   type="text"
+						   placeholder="Paste your public Spotify playlist link"
+						   class="bg-[#282828] text-white border border-[#3e3e3e] rounded-lg px-3 py-2 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--spotify-green)]" />
+				</fieldset>
+				<button type="submit"
+						class="bg-[var(--spotify-green)] text-black font-semibold py-2 rounded-lg hover:bg-[#1ed760] transition">
+					Add Playlist
+				</button>
+			</form>
+			<form class="flex flex-col gap-4"
+				  action="/dashboard/create-songqueue"
+				  method="post">
+				<button type="submit"
+						class="bg-[var(--spotify-green)] text-black font-semibold py-2 rounded-lg hover:bg-[#1ed760] transition">
+					Create empty song queue
+				</button>
+			</form>
+		</div>
 
 		<!-- Delete Playlist -->
 		<form th:unless="${songqueue_size < 0}"
@@ -76,6 +86,7 @@
 		</form>
 	</div>
 
+	<div th:replace="~{fragments/notification::error(${error})}"></div>
 </main>
 </body>
 </html>
