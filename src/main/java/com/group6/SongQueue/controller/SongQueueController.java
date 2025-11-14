@@ -1,8 +1,11 @@
 package com.group6.SongQueue.controller;
 
+import java.security.SecureRandom;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,61 +27,81 @@ import org.springframework.http.*;
 public class SongQueueController {
 
 	private static final Logger log = LoggerFactory.getLogger(SongQueueController.class);
-	private final Map<String, SongQueue> activeSongQueues;
+        private static final int JOIN_CODE_LENGTH = 6;
 
-	SongQueueController() {
-		activeSongQueues = new HashMap<>();
-	}
+        private final Map<String, SongQueue> activeSongQueues;
+        private final Map<String, String> joinCodesByQueue;
+        private final Map<String, String> queueByJoinCode;
+        private final SecureRandom random;
+        private final Map<String, Set<HttpSession>> participantsByQueue;
 
-	public void createSongQueue(HttpSession session) {
-		createSongQueue(session, new SongQueue());
-	}
+        SongQueueController() {
+                activeSongQueues = new HashMap<>();
+                joinCodesByQueue = new HashMap<>();
+                queueByJoinCode = new HashMap<>();
+                random = new SecureRandom();
+                participantsByQueue = new HashMap<>();
+        }
 
-	public void createSongQueue(HttpSession session, SongQueue songQueue) {
-		String accessToken = (String) session.getAttribute("spotify_access_token");
-		if(activeSongQueues.containsKey(accessToken)) return; // A song queue already exists for this access token
+        public void createSongQueue(HttpSession session) {
+                createSongQueue(session, new SongQueue());
+        }
 
-		activeSongQueues.put(accessToken, songQueue);
-	}
+        public void createSongQueue(HttpSession session, SongQueue songQueue) {
+                String accessToken = (String) session.getAttribute("spotify_access_token");
+                if (accessToken == null) return;
 
-	public void deleteSongQueue(HttpSession session) {
-		String accessToken = (String) session.getAttribute("spotify_access_token");
-		if(!activeSongQueues.containsKey(accessToken)) return; // A song queue doesn't exists for this access token
+                participantsByQueue.remove(accessToken);
+                activeSongQueues.put(accessToken, songQueue);
+                assignJoinCode(accessToken);
+        }
 
-		activeSongQueues.remove(accessToken);
-	}
+        public void deleteSongQueue(HttpSession session) {
+                String accessToken = (String) session.getAttribute("spotify_access_token");
+                if (accessToken == null) return;
 
-	public Integer getSongCount(HttpSession session) {
-		String accessToken = (String) session.getAttribute("spotify_access_token");
-		if(!activeSongQueues.containsKey(accessToken)) return -1;
-		return activeSongQueues.get(accessToken).size();
-	}
+                if (!activeSongQueues.containsKey(accessToken)) return; // A song queue doesn't exists for this access token
 
-	public List<Song> getSongsInOrder(HttpSession session) {
-		String accessToken = (String) session.getAttribute("spotify_access_token");
-		return activeSongQueues.get(accessToken).getSongsInOrder();
-	}
+                activeSongQueues.remove(accessToken);
+                String code = joinCodesByQueue.remove(accessToken);
+                if (code != null) queueByJoinCode.remove(code);
+                session.removeAttribute("userVotes");
+                ejectParticipants(accessToken, "The host ended the session.");
+        }
 
-	public void addSong(HttpSession session, Song song) {
-		String accessToken = (String) session.getAttribute("spotify_access_token");
-		activeSongQueues.get(accessToken).addSong(song);
-	}
+        public Integer getSongCount(HttpSession session) {
+                String key = resolveQueueKey(session);
+                if (key == null) return -1;
+                return activeSongQueues.get(key).size();
+        }
 
-	public void upvoteSong(HttpSession session, String songId) {
-		String accessToken = (String) session.getAttribute("spotify_access_token");
-		SongQueue queue = activeSongQueues.get(accessToken);
-		if (queue != null) {
-			queue.upvoteSong(songId);
-		}
-	}
+        public List<Song> getSongsInOrder(HttpSession session) {
+                String key = resolveQueueKey(session);
+                if (key == null) return List.of();
+                return activeSongQueues.get(key).getSongsInOrder();
+        }
 
-	public void downvoteSong(HttpSession session, String songId) {
-		String accessToken = (String) session.getAttribute("spotify_access_token");
-		SongQueue queue = activeSongQueues.get(accessToken);
-		if (queue != null) {
-			queue.downvoteSong(songId);
-		}
-	}
+        public void addSong(HttpSession session, Song song) {
+                String key = resolveQueueKey(session);
+                if (key == null) return;
+                activeSongQueues.get(key).addSong(song);
+        }
+
+        public void upvoteSong(HttpSession session, String songId) {
+                String key = resolveQueueKey(session);
+                SongQueue queue = key == null ? null : activeSongQueues.get(key);
+                if (queue != null) {
+                        queue.upvoteSong(songId);
+                }
+        }
+
+        public void downvoteSong(HttpSession session, String songId) {
+                String key = resolveQueueKey(session);
+                SongQueue queue = key == null ? null : activeSongQueues.get(key);
+                if (queue != null) {
+                        queue.downvoteSong(songId);
+                }
+        }
 
 	private static final int REFRESH_DELAY = 5000;
 	@Scheduled(fixedDelay = REFRESH_DELAY)
@@ -147,14 +170,123 @@ public class SongQueueController {
 		}
 	}
 
-	public Song getCurrentlyPlayingSong(HttpSession session) {
-		String accessToken = (String) session.getAttribute("spotify_access_token");
-		if (accessToken == null) return null;
-		SongQueue queue = activeSongQueues.get(accessToken);
-		if (queue != null) {
-			return queue.getCurrentlyPlayingSong();
-		}
-		log.warn("No active song queue for access token: {}", accessToken);
-		return null;
-	}
+        public Song getCurrentlyPlayingSong(HttpSession session) {
+                String key = resolveQueueKey(session);
+                if (key == null) return null;
+                SongQueue queue = activeSongQueues.get(key);
+                if (queue != null) {
+                        return queue.getCurrentlyPlayingSong();
+                }
+                log.warn("No active song queue for key: {}", key);
+                return null;
+        }
+
+        public boolean joinQueue(HttpSession session, String joinCode) {
+                if (joinCode == null) return false;
+                String normalized = joinCode.trim().toUpperCase();
+                if (normalized.isEmpty()) return false;
+
+                String queueKey = queueByJoinCode.get(normalized);
+                if (queueKey == null || !activeSongQueues.containsKey(queueKey)) {
+                        return false;
+                }
+
+                session.setAttribute("joined_queue_key", queueKey);
+                session.removeAttribute("userVotes");
+                session.removeAttribute("sessionClosedMessage");
+                participantsByQueue.computeIfAbsent(queueKey, k -> new HashSet<>()).add(session);
+                return true;
+        }
+
+        public void leaveQueue(HttpSession session) {
+                String joinedKey = (String) session.getAttribute("joined_queue_key");
+                session.removeAttribute("joined_queue_key");
+                session.removeAttribute("userVotes");
+                if (joinedKey != null) {
+                        participantsByQueue.computeIfPresent(joinedKey, (key, set) -> {
+                                set.remove(session);
+                                return set.isEmpty() ? null : set;
+                        });
+                }
+        }
+
+        public boolean isInQueue(HttpSession session) {
+                return resolveQueueKey(session) != null;
+        }
+
+        public boolean isHostSession(HttpSession session) {
+                String accessToken = (String) session.getAttribute("spotify_access_token");
+                return accessToken != null && activeSongQueues.containsKey(accessToken);
+        }
+
+        public String getJoinCode(HttpSession session) {
+                String key = resolveQueueKey(session);
+                if (key == null) return null;
+                return joinCodesByQueue.get(key);
+        }
+
+        public String getQueueOwnerToken(HttpSession session) {
+                String accessToken = (String) session.getAttribute("spotify_access_token");
+                if (accessToken != null && (activeSongQueues.containsKey(accessToken) || !joinCodesByQueue.containsKey(accessToken))) {
+                        return accessToken;
+                }
+
+                String joinedKey = (String) session.getAttribute("joined_queue_key");
+                if (joinedKey != null && activeSongQueues.containsKey(joinedKey)) {
+                        return joinedKey;
+                }
+                return null;
+        }
+
+        private String resolveQueueKey(HttpSession session) {
+                String accessToken = (String) session.getAttribute("spotify_access_token");
+                if (accessToken != null && activeSongQueues.containsKey(accessToken)) {
+                        return accessToken;
+                }
+
+                String joinedKey = (String) session.getAttribute("joined_queue_key");
+                if (joinedKey != null && activeSongQueues.containsKey(joinedKey)) {
+                        return joinedKey;
+                }
+
+                return null;
+        }
+
+        private void assignJoinCode(String queueKey) {
+                String existing = joinCodesByQueue.remove(queueKey);
+                if (existing != null) {
+                        queueByJoinCode.remove(existing);
+                }
+
+                String code = generateJoinCode();
+                joinCodesByQueue.put(queueKey, code);
+                queueByJoinCode.put(code, queueKey);
+        }
+
+        private String generateJoinCode() {
+                Set<String> existingCodes = new HashSet<>(queueByJoinCode.keySet());
+                String code;
+                do {
+                        code = random.ints('A', 'Z' + 1)
+                                .limit(JOIN_CODE_LENGTH)
+                                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                                .toString();
+                } while (existingCodes.contains(code));
+                return code;
+        }
+
+        private void ejectParticipants(String queueKey, String message) {
+                Set<HttpSession> participants = participantsByQueue.remove(queueKey);
+                if (participants == null) {
+                        return;
+                }
+
+                for (HttpSession participant : participants) {
+                        participant.removeAttribute("joined_queue_key");
+                        participant.removeAttribute("userVotes");
+                        if (message != null && !message.isBlank()) {
+                                participant.setAttribute("sessionClosedMessage", message);
+                        }
+                }
+        }
 }

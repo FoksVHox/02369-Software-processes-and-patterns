@@ -18,9 +18,21 @@
 <main class="bg-[#181818] shadow-lg rounded-2xl p-8 w-full max-w-4xl flex flex-col gap-6 border border-[#282828] mt-20">
 
     <!-- Header -->
-    <div class="text-center">
-        <h1 class="text-3xl font-bold text-[var(--spotify-green)]">Song Queue</h1>
-        <p class="text-gray-400">Vote on the best tracks</p>
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-bold text-[var(--spotify-green)]">Song Queue</h1>
+            <p class="text-gray-400">Vote on the best tracks</p>
+        </div>
+        <div th:if="${joinCode}" class="bg-[#111]/80 border border-[#2a2a2a] rounded-lg px-4 py-3 text-sm md:text-base">
+            <p class="text-gray-300">Connected to session</p>
+            <p class="font-mono text-lg" th:text="${joinCode}">ABCDEF</p>
+        </div>
+        <form th:if="${joinCode} and !isHost" action="/leave" method="post" class="self-start">
+            <button type="submit" class="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition">Leave session</button>
+        </form>
+        <form th:if="${isHost}" action="/dashboard/close-session" method="post" class="self-start">
+            <button type="submit" class="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition">End session</button>
+        </form>
     </div>
 
     <!-- Currently Playing -->

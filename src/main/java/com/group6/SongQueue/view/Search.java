@@ -37,8 +37,15 @@ public class Search {
 
 	@GetMapping("")
 	public String search(@RequestParam(name = "query", required = false) String searchQuery, HttpSession session, Model model) {
-		String accessToken = (String) session.getAttribute("spotify_access_token");
-		if (accessToken == null) return Login.redirectToLogin("/search" + (searchQuery == null ? "" : "?query=" + searchQuery), session);
+                String accessToken = songQueueController.getQueueOwnerToken(session);
+                if (accessToken == null) {
+                        if (session.getAttribute("spotify_access_token") != null) {
+                                return Login.redirectToLogin("/search" + (searchQuery == null ? "" : "?query=" + searchQuery), session);
+                        }
+                        model.addAttribute("error", "Join a session to search for songs.");
+                        model.addAttribute("songs", new ArrayList<>());
+                        return "search";
+                }
 
 		if(searchQuery == null || searchQuery == "") {
 			model.addAttribute("songs", new ArrayList<>());
@@ -88,8 +95,14 @@ public class Search {
 
 	@PostMapping("/add")
 	public String addSong(@RequestParam(name = "id", required = true) String songId, @RequestParam(name = "query", required = true) String searchQuery, HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-		String accessToken = (String) session.getAttribute("spotify_access_token");
-		if (accessToken == null) return Login.redirectToLogin("/search?query=" + (searchQuery == null ? "" : searchQuery), session);
+                String accessToken = songQueueController.getQueueOwnerToken(session);
+                if (accessToken == null) {
+                        if (session.getAttribute("spotify_access_token") != null) {
+                                return Login.redirectToLogin("/search?query=" + (searchQuery == null ? "" : searchQuery), session);
+                        }
+                        redirectAttributes.addFlashAttribute("error", "Join a session before adding songs.");
+                        return "redirect:/search";
+                }
 
 		redirectAttributes.addAttribute("query", searchQuery);
 
@@ -114,10 +127,10 @@ public class Search {
 		}
 
 		// Add song to song queue
-		if(songQueueController.getSongCount(session) >= 0) {
-			songQueueController.addSong(session, song);
-			redirectAttributes.addFlashAttribute("addedSong", "Succesfully added " + song.getTitle() + " to song queue.");
-		} else {
+                if(songQueueController.getSongCount(session) >= 0) {
+                        songQueueController.addSong(session, song);
+                        redirectAttributes.addFlashAttribute("addedSong", "Succesfully added " + song.getTitle() + " to song queue.");
+                } else {
 			redirectAttributes.addFlashAttribute("error", "No active song queue to add song to.");
 		}
 

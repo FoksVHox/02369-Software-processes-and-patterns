@@ -16,7 +16,13 @@
 </div>
 
 <div th:fragment="error(message)">
-	<div th:if="${message}">
-		<div th:replace="~{fragments/notification::notification(${message},'error')}"></div>
-	</div>
+    <div th:if="${message}">
+        <div th:replace="~{fragments/notification::notification(${message},'error')}"></div>
+    </div>
+</div>
+
+<div th:fragment="success(message)">
+    <div th:if="${message}">
+        <div th:replace="~{fragments/notification::notification(${message},'success')}"></div>
+    </div>
 </div>

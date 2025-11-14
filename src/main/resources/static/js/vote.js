@@ -1,4 +1,11 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const refreshFragments = async () => {
+        await Promise.all([
+            updateFragment("/vote/songlist", "song-list-container"),
+            updateFragment("/vote/current", "current-playing-container")
+        ]);
+    };
+
     document.body.addEventListener("submit", async (e) => {
         try {
             if (!e.target.classList.contains("vote-form")) return;
@@ -19,23 +26,31 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.warn("Vote POST failed:", voteResp.status);
             }
 
-            // fetch updated fragment
-            const fragmentResp = await fetch("/vote/songlist", { headers: { "Accept": "text/html" } });
-            if (!fragmentResp.ok) {
-                console.warn("Fragment fetch failed:", fragmentResp.status);
-                return;
-            }
-            const html = await fragmentResp.text();
-
-            // update container only if it exists
-            const container = document.getElementById("song-list-container");
-            if (!container) {
-                console.warn("Couldn't find #song-list-container in the DOM. Skipping update.");
-                return;
-            }
-            container.innerHTML = html;
+            await refreshFragments();
         } catch (err) {
             console.error("Error while submitting vote / updating fragment:", err);
         }
     });
+
+    refreshFragments();
+    setInterval(refreshFragments, 5000);
 });
+
+async function updateFragment(url, containerId) {
+    try {
+        const fragmentResp = await fetch(url, { headers: { "Accept": "text/html" } });
+        if (!fragmentResp.ok) {
+            console.warn("Fragment fetch failed:", fragmentResp.status, url);
+            return;
+        }
+        const html = await fragmentResp.text();
+        const container = document.getElementById(containerId);
+        if (!container) {
+            console.warn("Couldn't find #" + containerId + " in the DOM. Skipping update.");
+            return;
+        }
+        container.innerHTML = html;
+    } catch (err) {
+        console.error("Error while fetching fragment", url, err);
+    }
+}
