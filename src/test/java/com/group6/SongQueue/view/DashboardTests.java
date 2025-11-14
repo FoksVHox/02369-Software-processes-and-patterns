@@ -51,6 +51,4 @@ public class DashboardTests {
         assertNotNull(model.get("songqueue_size"));
         assertEquals(-1, ((Number) model.get("songqueue_size")).intValue());
     }
-
-
 }

@@ -12,4 +12,5 @@ To run tests:
 mvn verify
 ```
 
-> Nogle tests kræver adgang til Spotify, så sørg for, at der er en TEST_ACCESS_TOKEN i .env filen med et aktivt Spotify adgangstoken (Bliver dumpet i consollen ved login)
+> ![note] Spotify authentication
+> Some tests requires access to spotify, so make sure there is a TEST_ACCESS_TOKEN entry in the .env file with an active spotify access token (printed in console when logging in while debugging)

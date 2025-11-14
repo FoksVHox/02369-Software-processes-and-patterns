@@ -182,4 +182,72 @@ public class DashboardController {
 
                 return "redirect:" + redirect;
         }
+
+    @PostMapping("/add-song")
+    public String addSong(
+            @RequestParam("song-url") String songUrl,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+
+        String accessToken = (String) session.getAttribute("spotify_access_token");
+        if (accessToken == null) return Login.redirectToLogin("/dashboard", session);
+
+        try {
+            // Extract track ID
+            String trackId = extractTrackId(songUrl);
+            if (trackId == null) throw new Exception("Could not extract track ID");
+
+            log.info("Extracted track ID: {}", trackId);
+
+            // Call Spotify API
+            RestTemplate rest = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(accessToken);
+            headers.setAccept(java.util.List.of(MediaType.APPLICATION_JSON));
+            HttpEntity<Void> request = new HttpEntity<>(headers);
+
+            String url = "https://api.spotify.com/v1/tracks/" + trackId;
+            ResponseEntity<String> response =
+                    rest.exchange(url, HttpMethod.GET, request, String.class);
+
+            if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null)
+                throw new Exception("Spotify returned " + response.getStatusCode());
+
+            // Parse JSON into Song
+            JsonNode json = new ObjectMapper().readTree(response.getBody());
+            Song song = new Song(json);
+
+            // Add to queue
+            songQueueController.addSong(session, song);
+            redirectAttributes.addFlashAttribute("success",
+                    "Added: " + song.getTitle() + " by " + song.getArtist());
+
+        } catch (Exception ex) {
+            log.error("Failed to add song: {}", ex.getMessage(), ex);
+            redirectAttributes.addFlashAttribute("error",
+                    "Failed to add song. Check the link and try again.");
+        }
+
+        return "redirect:/dashboard";
+    }
+
+    private String extractTrackId(String input) {
+        if (input == null || input.isEmpty()) return null;
+
+        // Case 1: /track/<id>?si=...
+        if (input.contains("open.spotify.com/track/")) {
+            String after = input.substring(input.indexOf("track/") + 6);
+            return after.split("\\?")[0];
+        }
+
+        // Case 2: spotify:track:<id>
+        if (input.startsWith("spotify:track:")) {
+            return input.replace("spotify:track:", "");
+        }
+
+        // Case 3: assume raw track ID (very unlikely, but good to have just in case)
+        if (input.length() == 22) return input;
+
+        return null;
+    }
 }
