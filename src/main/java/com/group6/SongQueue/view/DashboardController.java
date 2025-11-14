@@ -64,9 +64,10 @@ public class DashboardController {
 			model.addAttribute("name", displayName);
 			model.addAttribute("email", email);
 			model.addAttribute("profileUrl", profileUrl);
-            model.addAttribute("sessionCode", 1984); // Placeholder session code TODO: Fix det her
 
-			model.addAttribute("songqueue_size", songQueueController.getSongCount(session));
+                        model.addAttribute("songqueue_size", songQueueController.getSongCount(session));
+                        model.addAttribute("joinCode", songQueueController.getJoinCode(session));
+                        model.addAttribute("isHost", songQueueController.isHostSession(session));
 
 			return "dashboard";
 
@@ -153,14 +154,32 @@ public class DashboardController {
 		return "redirect:/dashboard";
 	}
 
-	@PostMapping("/delete-playlist")
-	public String deletePlaylist(HttpSession session, Model model) {
-		String accessToken = (String) session.getAttribute("spotify_access_token");
-		if (accessToken == null) return Login.redirectToLogin("/dashboard", session);
+        @PostMapping("/close-session")
+        public String closeSession(HttpSession session,
+                                   RedirectAttributes redirectAttributes,
+                                   @RequestParam(value = "redirect", required = false) String redirectTarget) {
+                String redirect = (redirectTarget == null || redirectTarget.isBlank()) ? "/dashboard" : redirectTarget;
+                if (!redirect.startsWith("/")) {
+                        redirect = "/" + redirect;
+                }
 
-		songQueueController.deleteSongQueue(session);
+                String accessToken = (String) session.getAttribute("spotify_access_token");
+                if (accessToken == null) return Login.redirectToLogin(redirect, session);
 
-		// Return to dashboard
-		return "redirect:/dashboard";
-	}
+                if (!songQueueController.isHostSession(session)) {
+                        redirectAttributes.addFlashAttribute("error", "Create a queue before ending the session.");
+                        return "redirect:" + redirect;
+                }
+
+                songQueueController.deleteSongQueue(session);
+                songQueueController.leaveQueue(session);
+
+                if ("/".equals(redirect)) {
+                        redirectAttributes.addFlashAttribute("homeMessage", "Session ended and queue cleared.");
+                } else {
+                        redirectAttributes.addFlashAttribute("success", "Session ended and queue cleared.");
+                }
+
+                return "redirect:" + redirect;
+        }
 }
