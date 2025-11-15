@@ -65,7 +65,9 @@ public class DashboardController {
 			model.addAttribute("email", email);
 			model.addAttribute("profileUrl", profileUrl);
 
-			model.addAttribute("songqueue_size", songQueueController.getSongCount(session));
+                        model.addAttribute("songqueue_size", songQueueController.getSongCount(session));
+                        model.addAttribute("joinCode", songQueueController.getJoinCode(session));
+                        model.addAttribute("isHost", songQueueController.isHostSession(session));
 
 			return "dashboard";
 
@@ -152,82 +154,100 @@ public class DashboardController {
 		return "redirect:/dashboard";
 	}
 
-	@PostMapping("/delete-playlist")
-	public String deletePlaylist(HttpSession session, Model model) {
-		String accessToken = (String) session.getAttribute("spotify_access_token");
-		if (accessToken == null) return Login.redirectToLogin("/dashboard", session);
+        @PostMapping("/close-session")
+        public String closeSession(HttpSession session,
+                                   RedirectAttributes redirectAttributes,
+                                   @RequestParam(value = "redirect", required = false) String redirectTarget) {
+                String redirect = (redirectTarget == null || redirectTarget.isBlank()) ? "/dashboard" : redirectTarget;
+                if (!redirect.startsWith("/")) {
+                        redirect = "/" + redirect;
+                }
 
-		songQueueController.deleteSongQueue(session);
+                String accessToken = (String) session.getAttribute("spotify_access_token");
+                if (accessToken == null) return Login.redirectToLogin(redirect, session);
 
-		// Return to dashboard
-		return "redirect:/dashboard";
-	}
+                if (!songQueueController.isHostSession(session)) {
+                        redirectAttributes.addFlashAttribute("error", "Create a queue before ending the session.");
+                        return "redirect:" + redirect;
+                }
 
-	@PostMapping("/add-song")
-	public String addSong(
-			@RequestParam("song-url") String songUrl,
-			HttpSession session,
-			RedirectAttributes redirectAttributes) {
+                songQueueController.deleteSongQueue(session);
+                songQueueController.leaveQueue(session);
 
-		String accessToken = (String) session.getAttribute("spotify_access_token");
-		if (accessToken == null) return Login.redirectToLogin("/dashboard", session);
+                if ("/".equals(redirect)) {
+                        redirectAttributes.addFlashAttribute("homeMessage", "Session ended and queue cleared.");
+                } else {
+                        redirectAttributes.addFlashAttribute("success", "Session ended and queue cleared.");
+                }
 
-		try {
-			// Extract track ID
-			String trackId = extractTrackId(songUrl);
-			if (trackId == null) throw new Exception("Could not extract track ID");
+                return "redirect:" + redirect;
+        }
 
-			log.info("Extracted track ID: {}", trackId);
+    @PostMapping("/add-song")
+    public String addSong(
+            @RequestParam("song-url") String songUrl,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
 
-			// Call Spotify API
-			RestTemplate rest = new RestTemplate();
-			HttpHeaders headers = new HttpHeaders();
-			headers.setBearerAuth(accessToken);
-			headers.setAccept(java.util.List.of(MediaType.APPLICATION_JSON));
-			HttpEntity<Void> request = new HttpEntity<>(headers);
+        String accessToken = (String) session.getAttribute("spotify_access_token");
+        if (accessToken == null) return Login.redirectToLogin("/dashboard", session);
 
-			String url = "https://api.spotify.com/v1/tracks/" + trackId;
-			ResponseEntity<String> response =
-					rest.exchange(url, HttpMethod.GET, request, String.class);
+        try {
+            // Extract track ID
+            String trackId = extractTrackId(songUrl);
+            if (trackId == null) throw new Exception("Could not extract track ID");
 
-			if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null)
-				throw new Exception("Spotify returned " + response.getStatusCode());
+            log.info("Extracted track ID: {}", trackId);
 
-			// Parse JSON into Song
-			JsonNode json = new ObjectMapper().readTree(response.getBody());
-			Song song = new Song(json);
+            // Call Spotify API
+            RestTemplate rest = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(accessToken);
+            headers.setAccept(java.util.List.of(MediaType.APPLICATION_JSON));
+            HttpEntity<Void> request = new HttpEntity<>(headers);
 
-			// Add to queue
-			songQueueController.addSong(session, song);
-			redirectAttributes.addFlashAttribute("success",
-					"Added: " + song.getTitle() + " by " + song.getArtist());
+            String url = "https://api.spotify.com/v1/tracks/" + trackId;
+            ResponseEntity<String> response =
+                    rest.exchange(url, HttpMethod.GET, request, String.class);
 
-		} catch (Exception ex) {
-			log.error("Failed to add song: {}", ex.getMessage(), ex);
-			redirectAttributes.addFlashAttribute("error",
-					"Failed to add song. Check the link and try again.");
-		}
+            if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null)
+                throw new Exception("Spotify returned " + response.getStatusCode());
 
-		return "redirect:/dashboard";
-	}
+            // Parse JSON into Song
+            JsonNode json = new ObjectMapper().readTree(response.getBody());
+            Song song = new Song(json);
 
-	private String extractTrackId(String input) {
-		if (input == null || input.isEmpty()) return null;
+            // Add to queue
+            songQueueController.addSong(session, song);
+            redirectAttributes.addFlashAttribute("success",
+                    "Added: " + song.getTitle() + " by " + song.getArtist());
 
-		// Case 1: /track/<id>?si=...
-		if (input.contains("open.spotify.com/track/")) {
-			String after = input.substring(input.indexOf("track/") + 6);
-			return after.split("\\?")[0];
-		}
+        } catch (Exception ex) {
+            log.error("Failed to add song: {}", ex.getMessage(), ex);
+            redirectAttributes.addFlashAttribute("error",
+                    "Failed to add song. Check the link and try again.");
+        }
 
-		// Case 2: spotify:track:<id>
-		if (input.startsWith("spotify:track:")) {
-			return input.replace("spotify:track:", "");
-		}
+        return "redirect:/dashboard";
+    }
 
-		// Case 3: assume raw track ID (very unlikely, but good to have just in case)
-		if (input.length() == 22) return input;
+    private String extractTrackId(String input) {
+        if (input == null || input.isEmpty()) return null;
 
-		return null;
-	}
+        // Case 1: /track/<id>?si=...
+        if (input.contains("open.spotify.com/track/")) {
+            String after = input.substring(input.indexOf("track/") + 6);
+            return after.split("\\?")[0];
+        }
+
+        // Case 2: spotify:track:<id>
+        if (input.startsWith("spotify:track:")) {
+            return input.replace("spotify:track:", "");
+        }
+
+        // Case 3: assume raw track ID (very unlikely, but good to have just in case)
+        if (input.length() == 22) return input;
+
+        return null;
+    }
 }

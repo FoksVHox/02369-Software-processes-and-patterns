@@ -39,18 +39,16 @@ public class DashboardTests {
 
     @Test
     void testNoSongqueue() throws Exception {
-        MvcResult result = mockMvc.perform(
-                get("/dashboard").session(session)
-            )
-            .andExpect(status().isOk())
-            .andReturn();
+        MvcResult result = mockMvc.perform(get("/dashboard").session(session))
+                .andExpect(status().isOk())
+                .andReturn();
 
         ModelAndView modelView = result.getModelAndView();
         assertNotNull(modelView);
         var model = modelView.getModel();
 
         assertTrue(model.containsKey("name"));
-        assertEquals(-1, ((Integer)model.get("songqueue_size")).intValue());
+        assertNotNull(model.get("songqueue_size"));
+        assertEquals(-1, ((Number) model.get("songqueue_size")).intValue());
     }
-
 }

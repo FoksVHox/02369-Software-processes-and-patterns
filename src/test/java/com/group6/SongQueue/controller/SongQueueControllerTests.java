@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpSession;
@@ -47,6 +50,23 @@ public class SongQueueControllerTests {
         assertEquals(0, songQueueController.getSongCount(session));
         songQueueController.deleteSongQueue(session);
         assertEquals(-1, songQueueController.getSongCount(session));
+    }
+
+    @Test
+    void closingQueueRemovesGuestSessions() {
+        songQueueController.createSongQueue(session);
+        String joinCode = songQueueController.getJoinCode(session);
+        assertNotNull(joinCode);
+
+        MockHttpSession guestSession = new MockHttpSession();
+        assertTrue(songQueueController.joinQueue(guestSession, joinCode));
+        assertTrue(songQueueController.isInQueue(guestSession));
+
+        songQueueController.deleteSongQueue(session);
+
+        assertEquals(-1, songQueueController.getSongCount(session));
+        assertFalse(songQueueController.isInQueue(guestSession));
+        assertEquals("The host ended the session.", guestSession.getAttribute("sessionClosedMessage"));
     }
 
     @Test
