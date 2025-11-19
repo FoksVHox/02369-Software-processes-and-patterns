@@ -135,4 +135,8 @@ public class SongQueue {
     public Song getCurrentlyPlayingSong() {
         return currentlyPlayingSong;
     }
+
+    public void setCurrentlyPlayingSong(Song song) {
+        currentlyPlayingSong = song;
+    }
 }

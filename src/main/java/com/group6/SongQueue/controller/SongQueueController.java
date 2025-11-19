@@ -137,7 +137,8 @@ public class SongQueueController {
 				Song currentSong = new Song(json.path("item"));
 				Integer songDuration = json.path("item").path("duration_ms").asInt(0);
 
-				System.out.println("Current song: " + currentSong.toString());
+				//System.out.println("Current song: " + currentSong.toString());
+				songQueue.setCurrentlyPlayingSong(currentSong);
 
 				if(!isPlaying) continue; // The Spotify playback is currently paused, we don't want to take control
 				if(songDuration - progress >= REFRESH_DELAY) continue; // We are still not at end of current song, do nothing

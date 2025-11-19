@@ -1,4 +1,4 @@
-<div th:fragment="songlist">
+<div th:fragment="songlist(showVoteButtons)">
   <div th:if="${!#lists.isEmpty(songqueue)}"
        class="flex flex-col divide-y divide-[#282828]" id="song-list">
 
@@ -21,7 +21,7 @@
       </div>
 
       <!-- Voting Section -->
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3" th:if="${showVoteButtons}">
         <form th:action="@{/vote}" method="post" class="vote-form flex items-center gap-2">
           <input type="hidden" name="songId" th:value="${song.getId()}"/>
           <button type="submit" name="vote" value="up"

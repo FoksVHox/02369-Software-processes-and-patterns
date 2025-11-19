@@ -23,7 +23,7 @@
 		    </button>
 		</form>
 	</div>
-	<div th:if="${songs.size() > 0}" class="flex flex-col justify-start align-center gap-2 w-fit h-full overflow-y-scroll">
+	<div th:if="${songs.size() > 0}" class="flex flex-col justify-start align-center gap-2 w-fit max-w-2xl h-full overflow-y-scroll">
 		<div th:each="song : ${songs}" th:insert="~{fragments/song::song(${song},true)}" class="max-width"></div>
 	</div>
 	<p th:unless="${songs.size() > 0}">No songs found...</p>

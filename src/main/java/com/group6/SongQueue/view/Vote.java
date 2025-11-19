@@ -127,7 +127,7 @@ public class Vote {
         model.addAttribute("songqueue", songs);
         model.addAttribute("userVotes", getOrCreateVoteMap(session));
         model.addAttribute("currentSong", songQueueController.getCurrentlyPlayingSong(session));
-        return "fragments/songlist :: songlist";
+        return "fragments/songlist :: songlist(showVoteButtons=true)";
     }
 
     @GetMapping("/current")
