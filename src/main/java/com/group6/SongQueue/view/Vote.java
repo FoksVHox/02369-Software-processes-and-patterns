@@ -80,7 +80,9 @@ public class Vote {
 
             if ("up".equals(vote)) {
                 if (prev == 1) {
-                    // already upvoted => no-op
+                    // already upvoted => remove upvote
+                    songQueueController.downvoteSong(session, songId);
+                    votes.remove(songId);
                 } else if (prev == 0) {
                     // neutral -> up
                     songQueueController.upvoteSong(session, songId);
@@ -93,7 +95,9 @@ public class Vote {
                 }
             } else if ("down".equals(vote)) {
                 if (prev == -1) {
-                    // already downvoted => no-op
+                    // already downvoted => remove downvote
+                    songQueueController.upvoteSong(session, songId);
+                    votes.remove(songId);
                 } else if (prev == 0) {
                     // neutral -> down
                     songQueueController.downvoteSong(session, songId);
@@ -151,4 +155,5 @@ public class Vote {
             return m;
         }
     }
+
 }
