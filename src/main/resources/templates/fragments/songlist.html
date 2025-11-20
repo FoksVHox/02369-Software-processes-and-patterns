@@ -25,8 +25,7 @@
         <form th:action="@{/vote}" method="post" class="vote-form flex items-center gap-2" th:if="${showVoteButtons}">
           <input type="hidden" name="songId" th:value="${song.getId()}"/>
           <button type="submit" name="vote" value="up"
-                  th:disabled="${userVotes[song.getId()] == 1}"
-                  th:classappend="${userVotes[song.getId()] == 1} ? ' opacity-50 cursor-not-allowed' : ''"
+                  th:classappend="${userVotes[song.getId()] == 1} ? ' opacity-50 ' : ''"
                   class="text-[var(--spotify-green)] hover:scale-110 transition">▲</button>
         </form>
 
@@ -35,8 +34,7 @@
         <form th:action="@{/vote}" method="post" class="vote-form flex items-center gap-2" th:if="${showVoteButtons}">
           <input type="hidden" name="songId" th:value="${song.getId()}"/>
           <button type="submit" name="vote" value="down"
-                  th:disabled="${userVotes[song.getId()] == -1}"
-                  th:classappend="${userVotes[song.getId()] == -1} ? ' opacity-50 cursor-not-allowed' : ''"
+                  th:classappend="${userVotes[song.getId()] == -1} ? ' opacity-50 ' : ''"
                   class="text-red-500 hover:scale-110 transition">▼</button>
         </form>
       </div>
