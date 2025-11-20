@@ -1,4 +1,5 @@
 <div th:fragment="songlist(showVoteButtons)">
+
   <div th:if="${!#lists.isEmpty(songqueue)}"
        class="flex flex-col divide-y divide-[#282828]" id="song-list">
 
@@ -20,24 +21,54 @@
         </div>
       </div>
 
-      <!-- Voting Section -->
-      <div class="flex items-center gap-3">
+      <!-- Voting + Veto Section -->
+      <div class="flex items-center gap-4">
+        <!-- Upvote -->
         <form th:action="@{/vote}" method="post" class="vote-form flex items-center gap-2" th:if="${showVoteButtons}">
           <input type="hidden" name="songId" th:value="${song.getId()}"/>
           <button type="submit" name="vote" value="up"
-                  th:classappend="${userVotes[song.getId()] == 1} ? ' opacity-50 ' : ''"
-                  class="text-[var(--spotify-green)] hover:scale-110 transition">▲</button>
+                  class="text-[var(--spotify-green)] hover:scale-110 transition"
+                  th:classappend="${userVotes[song.getId()] == 1} ? ' opacity-50 ' : ''">
+            ▲
+          </button>
         </form>
 
         <span class="vote-count text-lg font-semibold" th:text="${song.getVotes()}">0</span>
 
+        <!-- Downvote -->
         <form th:action="@{/vote}" method="post" class="vote-form flex items-center gap-2" th:if="${showVoteButtons}">
           <input type="hidden" name="songId" th:value="${song.getId()}"/>
           <button type="submit" name="vote" value="down"
-                  th:classappend="${userVotes[song.getId()] == -1} ? ' opacity-50 ' : ''"
-                  class="text-red-500 hover:scale-110 transition">▼</button>
+                  class="text-red-500 hover:scale-110 transition"
+                  th:classappend="${userVotes[song.getId()] == -1} ? ' opacity-50 ' : ''">
+            ▼
+          </button>
         </form>
+
+        <!-- Veto Section -->
+        <th:block th:if="${(userVetoes != null ? (userVetoes['USED'] ?: 0) : 0) < (vetoesPerPlayer ?: 0)}">
+          <form th:action="@{/vote/veto}" method="post"
+                class="flex items-center gap-2">
+
+            <input type="hidden" name="songId" th:value="${song.getId()}"/>
+
+            <button type="submit"
+                    class="px-2 py-1 rounded-md bg-red-700/40 text-red-400 text-sm font-semibold
+               hover:bg-red-600/60 hover:text-red-200 transition">
+              Veto
+            </button>
+
+            <!-- Veto count badge -->
+            <span class="text-xs text-gray-400"
+                  th:if="${song.getVetoCount() > 0}">
+        <span th:text="${song.getVetoCount()}">0</span> /
+        <span th:text="${vetoThreshold}">?</span>
+    </span>
+          </form>
+        </th:block>
+
       </div>
+
     </div>
   </div>
 

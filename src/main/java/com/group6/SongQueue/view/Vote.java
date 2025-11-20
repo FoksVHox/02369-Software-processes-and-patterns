@@ -2,6 +2,7 @@ package com.group6.SongQueue.view;
 
 import com.group6.SongQueue.controller.SongQueueController;
 import com.group6.SongQueue.model.Song;
+import com.group6.SongQueue.model.SongQueue;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.HashMap;
 import java.util.List;
@@ -123,16 +125,27 @@ public class Vote {
         if (!songQueueController.isInQueue(session)) {
             model.addAttribute("songqueue", List.of());
             model.addAttribute("userVotes", Map.of());
+            model.addAttribute("userVetoes", Map.of());
+            model.addAttribute("vetoesPerPlayer", 0);
+            model.addAttribute("vetoThreshold", 0);
+
             return "fragments/songlist :: songlist";
         }
 
         List<Song> songs = songQueueController.getSongsInOrder(session);
+        SongQueue queue = songQueueController.getQueue(session);
 
         model.addAttribute("songqueue", songs);
         model.addAttribute("userVotes", getOrCreateVoteMap(session));
         model.addAttribute("currentSong", songQueueController.getCurrentlyPlayingSong(session));
+
+        model.addAttribute("userVetoes", getOrCreateVetoMap(session));
+        model.addAttribute("vetoesPerPlayer", queue.getVetoesPerPlayer());
+        model.addAttribute("vetoThreshold", queue.getVetoThreshold());
+
         return "fragments/songlist :: songlist(showVoteButtons=true)";
     }
+
 
     @GetMapping("/current")
     public String getCurrentPlayingFragment(HttpSession session, Model model) {
@@ -155,5 +168,57 @@ public class Vote {
             return m;
         }
     }
+    @PostMapping("/veto")
+    public String vetoSong(
+            @RequestParam("songId") String songId,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+
+        SongQueue queue = songQueueController.getQueue(session);
+
+        if (queue == null) {
+            redirectAttributes.addFlashAttribute("error", "No active queue.");
+            return "redirect:/vote";
+        }
+
+        int vetoesAllowed = queue.getVetoesPerPlayer();
+
+        // get per-user veto count
+        Map<String, Integer> userVetoes = getOrCreateVetoMap(session);
+        int usedVetoes = userVetoes.getOrDefault("USED", 0);
+
+        if (vetoesAllowed > 0 && usedVetoes >= vetoesAllowed) {
+            redirectAttributes.addFlashAttribute("error", "You have used all your vetoes!");
+            return "redirect:/vote";
+        }
+
+        boolean removed = queue.vetoSong(songId);
+
+        // increment this user's veto count
+        userVetoes.put("USED", usedVetoes + 1);
+        session.setAttribute("userVetoes", userVetoes);
+
+        if (removed) {
+            redirectAttributes.addFlashAttribute("success", "Song removed due to veto threshold.");
+        } else {
+            redirectAttributes.addFlashAttribute("success", "Veto added to song.");
+        }
+
+        return "redirect:/vote";
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Integer> getOrCreateVetoMap(HttpSession session) {
+        Map<String, Integer> vetoMap =
+                (Map<String, Integer>) session.getAttribute("userVetoes");
+
+        if (vetoMap == null) {
+            vetoMap = new HashMap<>();
+            session.setAttribute("userVetoes", vetoMap);
+        }
+
+        return vetoMap;
+    }
+
 
 }

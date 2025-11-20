@@ -66,6 +66,7 @@ public class SongQueueController {
                 String code = joinCodesByQueue.remove(accessToken);
                 if (code != null) queueByJoinCode.remove(code);
                 session.removeAttribute("userVotes");
+                session.removeAttribute("userVetoes");
                 ejectParticipants(accessToken, "The host ended the session.");
         }
 
@@ -194,6 +195,7 @@ public class SongQueueController {
 
                 session.setAttribute("joined_queue_key", queueKey);
                 session.removeAttribute("userVotes");
+                session.removeAttribute("userVetoes");
                 session.removeAttribute("sessionClosedMessage");
                 participantsByQueue.computeIfAbsent(queueKey, k -> new HashSet<>()).add(session);
                 return true;
@@ -203,6 +205,7 @@ public class SongQueueController {
                 String joinedKey = (String) session.getAttribute("joined_queue_key");
                 session.removeAttribute("joined_queue_key");
                 session.removeAttribute("userVotes");
+                session.removeAttribute("userVetoes");
                 if (joinedKey != null) {
                         participantsByQueue.computeIfPresent(joinedKey, (key, set) -> {
                                 set.remove(session);
@@ -290,4 +293,10 @@ public class SongQueueController {
                         }
                 }
         }
+
+    public SongQueue getQueue(HttpSession session) {
+        String key = resolveQueueKey(session);
+        if (key == null) return null;
+        return activeSongQueues.get(key);
+    }
 }
