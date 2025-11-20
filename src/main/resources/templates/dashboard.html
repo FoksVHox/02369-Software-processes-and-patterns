@@ -39,9 +39,9 @@
     </div>
 
     <!-- Playlist Forms -->
-    <div>
+    <div th:if="${songqueue_size < 0}">
         <!-- Add Playlist -->
-        <div th:if="${songqueue_size < 0}" class="flex flex-col gap-4">
+        <div class="flex flex-col gap-4">
             <form class="flex flex-col gap-2"
                   action="/dashboard/add-playlist"
                   method="post">
@@ -67,6 +67,13 @@
                 </button>
             </form>
         </div>
+    </div>
+    <div th:unless="${songqueue_size < 0}">
+
+	    <!-- Show live playlist -->
+	    <div class="mb-8">
+	    	<a href="/live"><button class="bg-[#1DB954] text-black font-semibold py-2 px-8 w-full rounded-lg hover:bg-[#1ed760] transition transition">Live playlist</button></a>
+	    </div>
 
         <!-- Add Song -->
         <form action="/dashboard/add-song" method="post" class="flex flex-col gap-4">
@@ -86,13 +93,13 @@
         </form>
 
         <!-- Delete Playlist -->
-        <div th:unless="${songqueue_size < 0}" class="flex flex-col gap-4">
+        <div class="flex flex-col gap-4">
             <label class="text-gray-300">
                 <span th:text="${songqueue_size}">0</span> songs currently in playlist.
             </label>
             <form action="/dashboard/close-session" method="post">
                 <button type="submit"
-                        class="bg-red-600 text-white font-semibold py-2 rounded-lg hover:bg-red-700 transition">
+                        class="bg-red-600 text-white font-semibold py-2 px-8 w-full rounded-lg hover:bg-red-700 transition">
                     End Session
                 </button>
             </form>

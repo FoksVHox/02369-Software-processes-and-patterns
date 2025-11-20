@@ -24,27 +24,20 @@
             <p class="text-gray-400">Vote on the best tracks</p>
         </div>
         <div th:if="${joinCode}" class="bg-[#111]/80 border border-[#2a2a2a] rounded-lg px-4 py-3 text-sm md:text-base">
-            <p class="text-gray-300">Connected to session</p>
-            <p class="font-mono text-lg" th:text="${joinCode}">ABCDEF</p>
+            <p class="text-gray-300">Connect to session: <span class="font-mono text-lg" th:text="${joinCode}">ABCDEF</span></p>
         </div>
-        <form th:if="${joinCode} and !isHost" action="/leave" method="post" class="self-start">
-            <button type="submit" class="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition">Leave session</button>
-        </form>
-        <form th:if="${isHost}" action="/dashboard/close-session" method="post" class="self-start">
-            <button type="submit" class="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition">End session</button>
-        </form>
     </div>
 
     <!-- Currently Playing -->
-    <div id="current-playing-container" th:insert="~{fragments/currentlyPlaying :: currentlyPlaying}"></div>
+    <div id="current-playing-container" th:insert="~{fragments/song :: song(${currentSong},false)}"></div>
 
     <!-- Song List -->
-    <div id="song-list-container" th:insert="~{fragments/songlist :: songlist(true)}"></div>
+    <div id="song-list-container" th:insert="~{fragments/songlist :: songlist(false)}"></div>
 
     <div th:replace="~{fragments/notification::error(${error})}"></div>
 </main>
 
-<script src="/js/vote.js"></script>
+<script src="/js/live.js"></script>
 
 </body>
 </html>

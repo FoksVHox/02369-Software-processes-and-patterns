@@ -1,4 +1,4 @@
-<div th:fragment="songlist">
+<div th:fragment="songlist(showVoteButtons)">
   <div th:if="${!#lists.isEmpty(songqueue)}"
        class="flex flex-col divide-y divide-[#282828]" id="song-list">
 
@@ -22,7 +22,7 @@
 
       <!-- Voting Section -->
       <div class="flex items-center gap-3">
-        <form th:action="@{/vote}" method="post" class="vote-form flex items-center gap-2">
+        <form th:action="@{/vote}" method="post" class="vote-form flex items-center gap-2" th:if="${showVoteButtons}">
           <input type="hidden" name="songId" th:value="${song.getId()}"/>
           <button type="submit" name="vote" value="up"
                   th:disabled="${userVotes[song.getId()] == 1}"
@@ -32,7 +32,7 @@
 
         <span class="vote-count text-lg font-semibold" th:text="${song.getVotes()}">0</span>
 
-        <form th:action="@{/vote}" method="post" class="vote-form flex items-center gap-2">
+        <form th:action="@{/vote}" method="post" class="vote-form flex items-center gap-2" th:if="${showVoteButtons}">
           <input type="hidden" name="songId" th:value="${song.getId()}"/>
           <button type="submit" name="vote" value="down"
                   th:disabled="${userVotes[song.getId()] == -1}"
