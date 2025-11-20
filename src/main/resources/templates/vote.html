@@ -41,6 +41,8 @@
     <!-- Song List -->
     <div id="song-list-container" th:insert="~{fragments/songlist :: songlist(true)}"></div>
 
+
+    <!-- Error Notification -->
     <div th:replace="~{fragments/notification::error(${error})}"></div>
 </main>
 

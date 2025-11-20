@@ -17,6 +17,7 @@ public class Song implements Comparable<Song> {
     private int votes;
     private final long timestamp; // time added, to break ties
     private final String albumArtUrl;
+    private int vetoCount = 0;
 
     public Song(String id, String title, String artist, String albumArtURL) {
         this.id = id;
@@ -77,6 +78,14 @@ public class Song implements Comparable<Song> {
     public String getArtist() { return artist; }
 
     public String getAlbumArtUrl() { return albumArtUrl; }
+
+    public void addVeto() {
+        vetoCount++;
+    }
+
+    public int getVetoCount() {
+        return vetoCount;
+    }
 
     @Override
     public String toString() {

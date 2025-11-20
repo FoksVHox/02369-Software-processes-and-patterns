@@ -79,7 +79,14 @@ public class DashboardController {
 	}
 
 	@PostMapping("/add-playlist")
-	public String addPlaylist(@RequestParam("playlist-url") String playlistUrl, HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+	public String addPlaylist(
+			@RequestParam("playlist-url") String playlistUrl,
+			HttpSession session,
+			Model model,
+			RedirectAttributes redirectAttributes,
+			@RequestParam(value = "vetoesPerPlayer", required = false, defaultValue = "0") int vetoesPerPlayer,
+			@RequestParam(value = "numberOfVetoesToRemoveSong", required = false, defaultValue = "0") int vetoThreshold
+) {
 		String accessToken = (String) session.getAttribute("spotify_access_token");
 		if (accessToken == null) return Login.redirectToLogin("/dashboard", session);
 
@@ -136,19 +143,30 @@ public class DashboardController {
 		}
 
 		// Initialize songqueue with playlist
-		songQueueController.createSongQueue(session, new SongQueue(songs));
+		SongQueue queue = new SongQueue(songs);
+		queue.setVetoSettings(vetoesPerPlayer, vetoThreshold);
+		songQueueController.createSongQueue(session, queue);
 
 		// Return to dashboard
 		return "redirect:/dashboard";
 	}
 
 	@PostMapping("/create-songqueue")
-	public String createSongqueue(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+	public String createSongqueue(
+			HttpSession session,
+			Model model,
+			RedirectAttributes redirectAttributes,
+			@RequestParam(value = "vetoesPerPlayer", required = false, defaultValue = "0") int vetoesPerPlayer,
+			@RequestParam(value = "numberOfVetoesToRemoveSong", required = false, defaultValue = "9999") int vetoThreshold
+	) {
 		String accessToken = (String) session.getAttribute("spotify_access_token");
 		if (accessToken == null) return Login.redirectToLogin("/dashboard", session);
 
 		// Initialize songqueue
-		songQueueController.createSongQueue(session, new SongQueue());
+		SongQueue queue = new SongQueue();
+		queue.setVetoSettings(vetoesPerPlayer, vetoThreshold);
+		songQueueController.createSongQueue(session, queue);
+
 
 		// Return to dashboard
 		return "redirect:/dashboard";
@@ -250,4 +268,5 @@ public class DashboardController {
 
         return null;
     }
+
 }
