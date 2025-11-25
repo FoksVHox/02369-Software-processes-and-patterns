@@ -1,0 +1,66 @@
+<div th:fragment="addSong" class="w-full">
+    <!-- Header -->
+    <div class="mb-4">
+        <h2 class="text-3xl font-semibold text-white">Add a song</h2>
+        <p class="text-sm text-gray-400 mt-1">Search Spotify or paste a track link / ID to add it to the queue.</p>
+    </div>
+
+    <!-- Forms: responsive two-column on md+ -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <!-- Search -->
+        <form action="" method="get" class="flex flex-col gap-2 w-full">
+            <label for="query" class="text-sm font-medium text-gray-300">Search for a song</label>
+            <label class="sr-only" for="query">Search for a song</label>
+            <div class="flex items-center bg-[#0f0f0f] border border-[#2a2a2a] rounded-lg w-full overflow-hidden">
+                <span class="px-4 text-gray-400">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/>
+        </svg>
+      </span>
+                <input id="query" name="query" type="text" placeholder="Search for a song..." th:value="${query}"
+                       class="bg-transparent p-4 w-full text-white placeholder-gray-500 focus:outline-none text-sm">
+            </div>
+            <div class="flex gap-2 mt-2">
+                <button type="submit" class="flex-1 bg-[#1DB954] hover:bg-[#1ed760] text-black font-semibold py-3 rounded-lg transition">
+                    Search
+                </button>
+            </div>
+        </form>
+
+        <!-- Add by URL/ID -->
+        <form action="/add-song/by-url" method="post" class="flex flex-col gap-2 w-full">
+            <input type="hidden" name="_csrf" value="${_csrf.token}">
+            <label for="song-url" class="text-sm font-medium text-gray-300">Add by Spotify link or ID</label>
+            <div class="flex items-center bg-[#0f0f0f] border border-[#2a2a2a] rounded-lg overflow-hidden">
+      <span class="px-4 text-gray-400">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 010 5.656l-2.828 2.828a4 4 0 01-5.656-5.656l1.414-1.414M10.172 13.828a4 4 0 010-5.656l2.828-2.828a4 4 0 015.656 5.656l-1.414 1.414"/>
+        </svg>
+      </span>
+                <input id="song-url" name="song-url" type="text" placeholder="Paste Spotify track link or ID"
+                       class="bg-transparent p-4 w-full text-white placeholder-gray-500 focus:outline-none text-sm">
+            </div>
+            <div class="flex gap-2 mt-2">
+                <button type="submit" class="flex-1 bg-[#1DB954] hover:bg-[#1ed760] text-black font-semibold py-3 rounded-lg transition">
+                    Add Song
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <hr class="border-t border-[#272727] my-4" />
+
+    <!-- Results / notifications -->
+    <div class="space-y-3">
+        <div th:if="${songs != null and songs.size() > 0}" class="flex flex-col gap-3 w-full max-h-[70vh] overflow-y-auto pr-2">
+            <div th:each="song : ${songs}" th:insert="~{fragments/song::song(${song},true)}"></div>
+        </div>
+
+        <p th:unless="${songs != null and songs.size() > 0}" class="text-gray-400">No songs found...</p>
+
+        <div th:if="${addedSong}">
+            <div th:replace="~{fragments/notification::notification(${addedSong},'success')}"></div>
+        </div>
+        <div th:replace="~{fragments/notification::error(${error})}"></div>
+    </div>
+</div>

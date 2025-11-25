@@ -164,19 +164,8 @@
 </div>
 
 <!-- SCRIPT -->
+<script src="/js/modal.js"></script>
 <script>
-    // Modal script
-    const modal = document.getElementById("sessionModal");
-    const openBtn = document.getElementById("openModal");
-    const closeBtn = document.getElementById("closeModal");
-    const playlistField = document.getElementById("playlistField");
-    const sessionForm = document.getElementById("sessionForm");
-
-    // Modal open/close
-    if (openBtn) openBtn.onclick = () => modal.classList.remove("hidden");
-    closeBtn.onclick = () => modal.classList.add("hidden");
-    modal.onclick = (e) => { if (e.target === modal) modal.classList.add("hidden"); };
-
     // Form endpoint switching
     document.querySelectorAll(".start-radio").forEach(radio => {
         radio.addEventListener("change", () => {
