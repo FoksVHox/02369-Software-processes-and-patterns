@@ -17,7 +17,6 @@
 
 <main class="bg-[#181818] shadow-lg rounded-2xl p-8 w-full max-w-4xl flex flex-col gap-6 border border-[#282828] mt-20">
 
-    <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
             <h1 class="text-3xl font-bold text-[var(--spotify-green)]">Song Queue</h1>
@@ -41,9 +40,32 @@
     <!-- Song List -->
     <div id="song-list-container" th:insert="~{fragments/songlist :: songlist(true)}"></div>
 
+
+    <!-- Error Notification -->
     <div th:replace="~{fragments/notification::error(${error})}"></div>
 </main>
 
+<!-- Add Song Button -->
+<button id="openAddSongModal"
+        data-url="/add-song"
+        class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-40 bg-[var(--spotify-green)] text-black font-semibold px-8 py-3 rounded-full shadow-lg hover:bg-[#1ed760] transition">
+    Add song
+</button>
+
+<!-- Add Song Modal -->
+<div id="addSongModal" class="fixed inset-0 bg-black/80 hidden flex items-start justify-center z-50 overflow-auto py-12">
+    <div class="bg-[#181818] border border-[#282828] rounded-2xl w-full max-w-lg p-8 relative">
+        <button id="closeAddSongModal" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl">✕</button>
+
+        <!-- Persistent loading indicator (outside injected content) -->
+        <div id="addSongLoading" class="text-gray-400 text-center mb-4 hidden">Loading...</div>
+
+        <!-- Injected content container -->
+        <div id="addSongModalBody" class="min-h-[200px] text-left"></div>
+    </div>
+</div>
+
+<script src="/js/modal.js"></script>
 <script src="/js/vote.js"></script>
 
 </body>

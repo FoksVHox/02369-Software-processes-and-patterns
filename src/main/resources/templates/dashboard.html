@@ -1,113 +1,206 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <title>Spotify Dashboard</title>
+    <title>Session Dashboard</title>
+
     <style>
-        /* Spotify green */
         :root {
             --spotify-green: #1DB954;
         }
     </style>
 </head>
-<body class="bg-[#121212] text-white flex items-center justify-center min-h-screen font-sans">
+
+<body class="bg-[#121212] text-white min-h-screen font-sans">
 
 <header th:replace="~{fragments/header::header}"></header>
 
-<main class="bg-[#181818] shadow-lg rounded-2xl p-10 w-full max-w-md flex flex-col gap-6 text-center border border-[#282828] mt-24">
+<!-- Body Container -->
+<main class="flex flex-col items-center justify-center pt-32">
 
-    <div>
-        <h1 class="text-3xl font-bold mb-2">
-            Welcome, <span th:text="${name}" class="text-[var(--spotify-green)]">User</span>!
-        </h1>
-        <p class="text-gray-300">
-            Email: <span th:text="${email}">unknown</span>
-        </p>
-        <p th:if="${profileUrl}" class="mt-3">
-            <a th:href="${profileUrl}" target="_blank"
-               class="text-[var(--spotify-green)] hover:underline font-medium">
-                View Spotify Profile
-            </a>
-        </p>
-    </div>
+    <!-- Card -->
+    <section class="bg-[#181818] border border-[#282828] rounded-2xl p-10 w-full max-w-md shadow-lg text-center">
 
-    <div th:if="${joinCode}" class="bg-[#111]/80 border border-[#2a2a2a] rounded-lg p-4">
-        <h2 class="text-xl font-semibold text-[var(--spotify-green)]">Share your join code</h2>
-        <p class="font-mono text-lg tracking-widest" th:text="${joinCode}">ABCDEF</p>
-    </div>
+        <h1 class="text-4xl font-bold mb-6">Hello!</h1>
 
-    <!-- Playlist Forms -->
-    <div th:if="${songqueue_size < 0}">
-        <!-- Add Playlist -->
-        <div class="flex flex-col gap-4">
-            <form class="flex flex-col gap-2"
-                  action="/dashboard/add-playlist"
-                  method="post">
-                <fieldset class="flex flex-col gap-2 text-left">
-                    <label for="playlist-url" class="font-semibold text-gray-200">Playlist URL:</label>
-                    <input id="playlist-url"
-                           name="playlist-url"
-                           type="text"
-                           placeholder="Paste your public Spotify playlist link"
-                           class="bg-[#282828] text-white border border-[#3e3e3e] rounded-lg px-3 py-2 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--spotify-green)]"/>
-                </fieldset>
-                <button type="submit"
-                        class="bg-[var(--spotify-green)] text-black font-semibold py-2 rounded-lg hover:bg-[#1ed760] transition">
-                    Add Playlist
-                </button>
-            </form>
-            <form class="flex flex-col gap-4"
-                  action="/dashboard/create-songqueue"
-                  method="post">
-                <button type="submit"
-                        class="bg-[var(--spotify-green)] text-black font-semibold py-2 rounded-lg hover:bg-[#1ed760] transition">
-                    Create empty song queue
-                </button>
-            </form>
+        <!-- Create session button -->
+        <button id="openModal"
+                th:if="${songqueue_size < 0}"
+                class="bg-[var(--spotify-green)] text-black font-semibold px-5 py-3 rounded-xl hover:bg-[#1ed760] transition w-full">
+            Create Session
+        </button>
+
+        <div class="mt-10 text-sm text-gray-300">
+            Logged in as:
+            <span class="font-semibold text-white" th:text="${name}">User</span><br>
+            <span th:text="${email}">unknown</span>
         </div>
-    </div>
-    <div th:unless="${songqueue_size < 0}">
 
-	    <!-- Show live playlist -->
-	    <div class="mb-8">
-	    	<a href="/live"><button class="bg-[#1DB954] text-black font-semibold py-2 px-8 w-full rounded-lg hover:bg-[#1ed760] transition transition">Live playlist</button></a>
-	    </div>
+        <!-- Join code (only available if session exists) -->
+        <div th:if="${joinCode}"
+             class="mt-6 bg-[#111]/80 border border-[#2a2a2a] rounded-lg p-4">
+            <h2 class="text-lg font-semibold text-[var(--spotify-green)]">Share your join code</h2>
+            <p class="font-mono text-xl tracking-widest" th:text="${joinCode}">ABCDEF</p>
+        </div>
 
-        <!-- Add Song -->
-        <form action="/dashboard/add-song" method="post" class="flex flex-col gap-4">
-            <input type="hidden" name="_csrf" value="${_csrf.token}">
-            <label for="song-url" class="font-semibold text-gray-200 text-left">
-                Add Song by Spotify Link or ID:
-            </label>
-            <input id="song-url"
-                   name="song-url"
-                   type="text"
-                   placeholder="Paste Spotify track link or ID"
-                   class="bg-[#282828] text-white border border-[#3e3e3e] rounded-lg px-3 py-2 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#1DB954]" />
+        <!-- Delete session button -->
+        <form th:unless="${songqueue_size < 0}"
+              action="/dashboard/close-session"
+              method="post"
+              class="mt-6">
             <button type="submit"
-                    class="bg-[#1DB954] text-black font-semibold py-2 rounded-lg hover:bg-[#1ed760] transition">
-                Add Song
+                    class="bg-red-600 text-white w-full py-3 rounded-xl font-semibold hover:bg-red-700 transition">
+                End Session
             </button>
         </form>
+    </section>
 
-        <!-- Delete Playlist -->
-        <div class="flex flex-col gap-4">
-            <label class="text-gray-300">
-                <span th:text="${songqueue_size}">0</span> songs currently in playlist.
-            </label>
-            <form action="/dashboard/close-session" method="post">
-                <button type="submit"
-                        class="bg-red-600 text-white font-semibold py-2 px-8 w-full rounded-lg hover:bg-red-700 transition">
-                    End Session
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <div th:replace="~{fragments/notification::success(${success})}"></div>
-    <div th:replace="~{fragments/notification::error(${error})}"></div>
 </main>
-</body>
-</html>
+
+<!-- MODAL -->
+<div id="sessionModal"
+     class="fixed inset-0 bg-black/80 hidden flex items-center justify-center z-50">
+
+    <div class="bg-[#181818] border border-[#282828] rounded-2xl w-full max-w-lg p-8 relative">
+
+        <!-- Close button -->
+        <button id="closeModal"
+                class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl">
+            ✕
+        </button>
+
+        <h2 class="text-2xl font-bold mb-6 text-center">Create Session</h2>
+
+        <!-- Form that dynamically chooses correct endpoint -->
+        <form id="sessionForm" method="post">
+
+            <!-- Start With Options -->
+            <h3 class="text-lg font-semibold mb-2">Start With:</h3>
+
+            <div class="flex flex-col gap-3 mb-6">
+                <label class="flex items-center gap-3 bg-[#222] px-4 py-3 rounded-lg cursor-pointer">
+                    <input type="radio" name="startType" value="playlist"
+                           class="accent-[var(--spotify-green)] start-radio" />
+                    <span>Playlist</span>
+                </label>
+
+                <label class="flex items-center gap-3 bg-[#222] px-4 py-3 rounded-lg cursor-pointer">
+                    <input type="radio" name="startType" value="empty"
+                           class="accent-[var(--spotify-green)] start-radio" />
+                    <span>Empty Queue</span>
+                </label>
+            </div>
+
+            <!-- Playlist URL field (hidden until playlist selected) -->
+            <div id="playlistField" class="hidden flex flex-col gap-2 mb-6">
+                <label for="playlist-url" class="font-semibold text-gray-200">Playlist URL:</label>
+                <input id="playlist-url"
+                       name="playlist-url"
+                       type="text"
+                       placeholder="Paste your public Spotify playlist link"
+                       class="bg-[#282828] text-white border border-[#3e3e3e] rounded-lg px-3 py-2 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--spotify-green)]" />
+            </div>
+
+            <!-- Settings -->
+            <h3 class="text-lg font-semibold mb-2">Settings</h3>
+
+            <div class="bg-[#222] border border-[#333] rounded-lg px-4 py-4 text-gray-400 flex flex-col gap-4">
+
+                <!-- Toggle veto input -->
+                <label class="flex items-center gap-3 cursor-pointer">
+                    <input id="enableVeto"
+                           type="checkbox"
+                           class="accent-[var(--spotify-green)]" />
+                    <span class="text-gray-200 font-semibold">Enable vetoes</span>
+                </label>
+
+                <!-- Veto inputs (hidden until checkbox ticked) -->
+                <div id="vetoField" class="hidden flex flex-col gap-2">
+
+                    <label for="vetoesPerPlayer" class="font-semibold text-gray-200">
+                        Number of vetoes per player:
+                    </label>
+
+                    <input id="vetoesPerPlayer"
+                           name="vetoesPerPlayer"
+                           type="number"
+                           min="1"
+                           placeholder="1"
+                           class="bg-[#282828] text-white border border-[#3e3e3e] rounded-lg px-3 py-2
+                      placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--spotify-green)]" />
+
+                    <label for="numberOfVetoesToRemoveSong" class="font-semibold text-gray-200">
+                        Number of vetoes required to remove song from queue:
+                    </label>
+
+                    <input id="numberOfVetoesToRemoveSong"
+                           name="numberOfVetoesToRemoveSong"
+                           type="number"
+                           min="1"
+                           placeholder="1"
+                           class="bg-[#282828] text-white border border-[#3e3e3e] rounded-lg px-3 py-2
+                      placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--spotify-green)]" />
+                </div>
+
+            </div>
+
+
+            <!-- Create Button -->
+            <div class="flex justify-end mt-8">
+                <button id="createButton"
+                        type="submit"
+                        disabled
+                        class="opacity-50 cursor-not-allowed bg-[var(--spotify-green)] text-black font-semibold px-6 py-2 rounded-lg transition">
+                    Create
+                </button>
+            </div>
+
+
+
+        </form>
+    </div>
+</div>
+
+<!-- SCRIPT -->
+<script src="/js/modal.js"></script>
+<script>
+    // Form endpoint switching
+    document.querySelectorAll(".start-radio").forEach(radio => {
+        radio.addEventListener("change", () => {
+            if (radio.value === "playlist") {
+                playlistField.classList.remove("hidden");
+                sessionForm.action = "/dashboard/add-playlist";
+            } else {
+                playlistField.classList.add("hidden");
+                sessionForm.action = "/dashboard/create-songqueue";
+            }
+        });
+    });
+
+    // Create button enable/disable logic
+    const createButton = document.getElementById("createButton");
+
+    // When a radio changes, enable the button
+    document.querySelectorAll(".start-radio").forEach(radio => {
+        radio.addEventListener("change", () => {
+            createButton.disabled = false;
+            createButton.classList.remove("opacity-50", "cursor-not-allowed");
+            createButton.classList.add("hover:bg-[#1ed760]");
+        });
+    });
+
+    // Veto script
+    const enableVeto = document.getElementById("enableVeto");
+    const vetoField = document.getElementById("vetoField");
+
+    enableVeto.addEventListener("change", () => {
+        if (enableVeto.checked) {
+            vetoField.classList.remove("hidden");
+        } else {
+            vetoField.classList.add("hidden");
+        }
+    });
+</script>
+

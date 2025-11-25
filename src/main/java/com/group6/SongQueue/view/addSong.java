@@ -1,3 +1,4 @@
+// java
 package com.group6.SongQueue.view;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -26,10 +27,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Controller
-@RequestMapping("/search")
-public class Search {
+@RequestMapping({"/search", "/add-song"})
+public class addSong {
 
-	private static final Logger log = LoggerFactory.getLogger(DashboardController.class);
+	private static final Logger log = LoggerFactory.getLogger(addSong.class);
 	private static final String SPOTIFY_SEARCH_URL = "https://api.spotify.com/v1/search";
 
 	@Autowired
@@ -44,12 +45,12 @@ public class Search {
                         }
                         model.addAttribute("error", "Join a session to search for songs.");
                         model.addAttribute("songs", new ArrayList<>());
-                        return "search";
+                        return "fragments/addSong :: addSong";
                 }
 
-		if(searchQuery == null || searchQuery == "") {
+		if(searchQuery == null || searchQuery.isEmpty()) {
 			model.addAttribute("songs", new ArrayList<>());
-			return "search";
+			return "fragments/addSong :: addSong";
 		}
 		model.addAttribute("query", searchQuery);
 
@@ -83,13 +84,13 @@ public class Search {
 			}
 			model.addAttribute("songs", songs);
 
-			return "search";
+			return "fragments/addSong :: addSong";
 
 		} catch (Exception ex) {
 			log.error("Error searching Spotify", ex);
 			model.addAttribute("error", "Error seaching Spotify for songs.");
 			model.addAttribute("songs", new ArrayList<>());
-			return "search";
+			return "fragments/addSong :: addSong";
 		}
 	}
 
@@ -135,5 +136,72 @@ public class Search {
 		}
 
 		return "redirect:/search";
+	}
+	@PostMapping("/by-url")
+	public String addSongByUrl(
+			@RequestParam("song-url") String songUrl,
+			HttpSession session,
+			RedirectAttributes redirectAttributes) {
+
+		String accessToken = (String) session.getAttribute("spotify_access_token");
+		if (accessToken == null) return Login.redirectToLogin("/dashboard", session);
+
+		try {
+			// Extract track ID
+			String trackId = extractTrackId(songUrl);
+			if (trackId == null) throw new Exception("Could not extract track ID");
+
+			log.info("Extracted track ID: {}", trackId);
+
+			// Call Spotify API
+			RestTemplate rest = new RestTemplate();
+			HttpHeaders headers = new HttpHeaders();
+			headers.setBearerAuth(accessToken);
+			headers.setAccept(java.util.List.of(MediaType.APPLICATION_JSON));
+			HttpEntity<Void> request = new HttpEntity<>(headers);
+
+			String url = "https://api.spotify.com/v1/tracks/" + trackId;
+			ResponseEntity<String> response =
+					rest.exchange(url, HttpMethod.GET, request, String.class);
+
+			if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null)
+				throw new Exception("Spotify returned " + response.getStatusCode());
+
+			// Parse JSON into Song
+			JsonNode json = new ObjectMapper().readTree(response.getBody());
+			Song song = new Song(json);
+
+			// Add to queue
+			songQueueController.addSong(session, song);
+			redirectAttributes.addFlashAttribute("success",
+					"Added: " + song.getTitle() + " by " + song.getArtist());
+
+		} catch (Exception ex) {
+			log.error("Failed to add song: {}", ex.getMessage(), ex);
+			redirectAttributes.addFlashAttribute("error",
+					"Failed to add song. Check the link and try again.");
+		}
+
+		return "redirect:/dashboard";
+	}
+
+	private String extractTrackId(String input) {
+		if (input == null || input.isEmpty()) return null;
+
+		// Case 1: /track/<id>?si=...
+		if (input.contains("open.spotify.com/track/")) {
+			String after = input.substring(input.indexOf("track/") + 6);
+			return after.split("\\?")[0];
+		}
+
+		// Case 2: spotify:track:<id>
+		if (input.startsWith("spotify:track:")) {
+			return input.replace("spotify:track:", "");
+		}
+
+		// Case 3: assume raw track ID (very unlikely, but good to have just in case)
+		if (input.length() == 22) return input;
+
+		return null;
 	}
 }

@@ -37,6 +37,15 @@ public class SongQueue {
      * The currently playing song (not in the queue)
      */
     private Song currentlyPlayingSong = null;
+    /**
+     * [UNUSED]
+     * The amount of vetoes each player starts with.
+     */
+    private int vetoesPerPlayer = 0; // Not used at the moment since we don't really keep track of guests
+    /**
+     * The amount of vetoes a song needs to be removed from the queue.
+     */
+    private int vetoThreshold = Integer.MAX_VALUE;
 
     /**
      * Adds a new song at the correct position in the queue if it doesn't already exist.
@@ -132,6 +141,19 @@ public class SongQueue {
         return currentlyPlayingSong;
     }
 
+    public boolean vetoSong(String id) {
+        Song song = songMap.get(id);
+        if (song == null) return false;
+
+        song.addVeto();
+        if (song.getVetoCount() >= vetoThreshold) {
+            removeSong(id);
+            return true; // song removed
+        }
+        return false; // not removed yet
+    }
+
+
     public Song getCurrentlyPlayingSong() {
         return currentlyPlayingSong;
     }
@@ -139,4 +161,13 @@ public class SongQueue {
     public void setCurrentlyPlayingSong(Song song) {
         currentlyPlayingSong = song;
     }
+
+    public void setVetoSettings(int perPlayer, int threshold) {
+        this.vetoesPerPlayer = perPlayer;
+        this.vetoThreshold = threshold;
+    }
+
+    public int getVetoThreshold() { return vetoThreshold; }
+
+    public int getVetoesPerPlayer() { return vetoesPerPlayer; }
 }
