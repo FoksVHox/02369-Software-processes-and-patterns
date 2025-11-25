@@ -5,11 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.tailwindcss.com"></script>
     <title>Song Queue</title>
-    <style>
-        :root {
-            --spotify-green: #1DB954;
-        }
-    </style>
 </head>
 <body class="bg-[#121212] text-white flex flex-col items-center justify-center min-h-screen font-sans">
 
@@ -20,7 +15,7 @@
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-            <h1 class="text-3xl font-bold text-[var(--spotify-green)]">Song Queue</h1>
+            <h1 class="text-3xl font-bold text-[var(--color)]">Song Queue</h1>
             <p class="text-gray-400">Vote on the best tracks</p>
         </div>
         <div th:if="${joinCode}" class="bg-[#111]/80 border border-[#2a2a2a] rounded-lg px-4 py-3 text-sm md:text-base">
@@ -38,6 +33,7 @@
 </main>
 
 <script src="/js/live.js"></script>
+<script th:src="@{/js/theme.js}"></script>
 
 </body>
 </html>

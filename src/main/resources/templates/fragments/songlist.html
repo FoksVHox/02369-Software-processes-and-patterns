@@ -27,7 +27,7 @@
         <form th:action="@{/vote}" method="post" class="vote-form flex items-center gap-2" th:if="${showVoteButtons}">
           <input type="hidden" name="songId" th:value="${song.getId()}"/>
           <button type="submit" name="vote" value="up"
-                  class="text-[var(--spotify-green)] hover:scale-110 transition"
+                  class="text-green-500 hover:scale-110 transition"
                   th:classappend="${userVotes[song.getId()] == 1} ? ' opacity-50 ' : ''">
             ▲
           </button>
