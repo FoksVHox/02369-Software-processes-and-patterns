@@ -1,15 +1,11 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <script src="https://cdn.tailwindcss.com"></script>
     <title>Spotify Dashboard</title>
-    <style>
-        :root {
-            --spotify-green: #1DB954;
-        }
-    </style>
 </head>
 <body class="bg-[#121212] text-white min-h-screen flex flex-col items-center font-sans">
 
@@ -19,7 +15,7 @@
 	<!-- Join a session -->
     <section class="bg-[#181818] border border-[#282828] rounded-2xl p-10 w-full max-w-xl flex flex-col gap-6 mt-24 shadow-lg">
         <div class="text-center">
-            <h1 class="text-3xl font-bold text-[var(--spotify-green)]">Join a Session</h1>
+            <h1 class="text-3xl font-bold text-[var(--color)]">Join a Session</h1>
             <p class="text-gray-400">Enter a host's code to add songs and vote without logging in.</p>
         </div>
 
@@ -34,10 +30,10 @@
         <form action="/join" method="post" class="flex flex-col gap-4">
             <label for="join-code" class="text-left font-semibold text-gray-300">Join Code</label>
             <input id="join-code" name="join-code" type="text" placeholder="ABCDEF" maxlength="6" minlength="6"
-                   class="bg-[#282828] text-white border border-[#3e3e3e] rounded-lg px-3 py-2 uppercase tracking-widest text-center focus:outline-none focus:ring-2 focus:ring-[var(--spotify-green)]"
+                   class="bg-[#282828] text-white border border-[#3e3e3e] rounded-lg px-3 py-2 uppercase tracking-widest text-center focus:outline-none focus:ring-2 focus:ring-[var(--color)]"
                    required/>
             <button type="submit"
-                    class="bg-[var(--spotify-green)] text-black font-semibold py-2 rounded-lg hover:bg-[#1ed760] transition">
+                    class="bg-[var(--color)] text-black font-semibold py-2 rounded-lg hover:bg-[var(--hover)] transition">
                 Join Session
             </button>
         </form>
@@ -55,7 +51,7 @@
         </div>
 
         <div th:if="${isHost}" class="bg-[#111]/80 border border-[#2a2a2a] rounded-lg p-4">
-            <h2 class="text-xl font-semibold text-[var(--spotify-green)]">Hosting?</h2>
+            <h2 class="text-xl font-semibold text-[var(--color)]">Hosting?</h2>
             <p th:if="${activeJoinCode}" class="text-gray-300">Share this code with your guests: <span
                     class="font-mono text-white" th:text="${activeJoinCode}">ABCDEF</span></p>
             <p th:unless="${activeJoinCode}" class="text-gray-400">Create a queue on the dashboard to generate a join
@@ -72,20 +68,20 @@
     <!-- Create a session -->
     <section class="bg-[#181818] border border-[#282828] rounded-2xl p-10 w-full max-w-xl gap-6 shadow-lg text-center">
 	   	<div class="text-center">
-	        <h1 class="text-3xl font-bold text-[var(--spotify-green)]">Create a Session</h1>
+	        <h1 class="text-3xl font-bold text-[var(--color)]">Create a Session</h1>
 	        <p class="text-gray-400">Create and manage a new session by logging in with Spotify.</p>
 	    </div>
 
         <!-- Create session button -->
         <button id="openModal"
                 th:if="${isLoggedIn}"
-                class="bg-[var(--spotify-green)] text-black font-semibold px-5 py-3 rounded-xl hover:bg-[#1ed760] transition w-full">
+                class="bg-[var(--color)] text-black font-semibold px-5 py-3 rounded-xl hover:bg-[var(--hover)] transition w-full">
             Create Session
         </button>
 
         <!-- Login button -->
         <form method="get" action="/login" th:if="${!isLoggedIn}">
-	        <button class="bg-[var(--spotify-green)] text-black font-semibold px-5 py-3 rounded-xl hover:bg-[#1ed760] transition w-full">
+	        <button class="bg-[var(--color)] text-black font-semibold px-5 py-3 rounded-xl hover:bg-[var(--hover)] transition w-full">
 	            Login with Spotify
 	        </button>
         </form>
@@ -115,13 +111,13 @@
             <div class="flex flex-col gap-3 mb-6">
                 <label class="flex items-center gap-3 bg-[#222] px-4 py-3 rounded-lg cursor-pointer">
                     <input type="radio" name="startType" value="playlist"
-                           class="accent-[var(--spotify-green)] start-radio" />
+                           class="accent-[var(--color)] start-radio" />
                     <span>Playlist</span>
                 </label>
 
                 <label class="flex items-center gap-3 bg-[#222] px-4 py-3 rounded-lg cursor-pointer">
                     <input type="radio" name="startType" value="empty"
-                           class="accent-[var(--spotify-green)] start-radio" />
+                           class="accent-[var(--color)] start-radio" />
                     <span>Empty Queue</span>
                 </label>
             </div>
@@ -133,7 +129,7 @@
                        name="playlist-url"
                        type="text"
                        placeholder="Paste your public Spotify playlist link"
-                       class="bg-[#282828] text-white border border-[#3e3e3e] rounded-lg px-3 py-2 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--spotify-green)]" />
+                       class="bg-[#282828] text-white border border-[#3e3e3e] rounded-lg px-3 py-2 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--color)]" />
             </div>
 
             <!-- Settings -->
@@ -145,7 +141,7 @@
                 <label class="flex items-center gap-3 cursor-pointer">
                     <input id="enableVeto"
                            type="checkbox"
-                           class="accent-[var(--spotify-green)]" />
+                           class="accent-[var(--color)]" />
                     <span class="text-gray-200 font-semibold">Enable vetoes</span>
                 </label>
 
@@ -162,7 +158,7 @@
                            min="1"
                            placeholder="1"
                            class="bg-[#282828] text-white border border-[#3e3e3e] rounded-lg px-3 py-2
-                      placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--spotify-green)]" />
+                      placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--color)]" />
 
                     <label for="numberOfVetoesToRemoveSong" class="font-semibold text-gray-200">
                         Number of vetoes required to remove song from queue:
@@ -174,7 +170,7 @@
                            min="1"
                            placeholder="1"
                            class="bg-[#282828] text-white border border-[#3e3e3e] rounded-lg px-3 py-2
-                      placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--spotify-green)]" />
+                      placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--color)]" />
                 </div>
 
             </div>
@@ -185,12 +181,10 @@
                 <button id="createButton"
                         type="submit"
                         disabled
-                        class="opacity-50 cursor-not-allowed bg-[var(--spotify-green)] text-black font-semibold px-6 py-2 rounded-lg transition">
+                        class="opacity-50 cursor-not-allowed bg-[var(--color)] text-black font-semibold px-6 py-2 rounded-lg transition">
                     Create
                 </button>
             </div>
-
-
 
         </form>
     </div>
@@ -220,7 +214,7 @@
         radio.addEventListener("change", () => {
             createButton.disabled = false;
             createButton.classList.remove("opacity-50", "cursor-not-allowed");
-            createButton.classList.add("hover:bg-[#1ed760]");
+            createButton.classList.add("hover:bg-[var(--hover)]");
         });
     });
 

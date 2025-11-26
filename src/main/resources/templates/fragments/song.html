@@ -1,6 +1,6 @@
 <a th:fragment="song(song,showAddButton)" th:if="${song != null}"
 	th:href="${'https://open.spotify.com/track/' + song.getId().replace('spotify:track:','')}" target="_blank"
-	class="flex w-full bg-gray-900 text-white rounded-lg shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-200 border-l-4 border-green-500 hover:border-green-400"
+	class="flex w-full bg-gray-900 text-white rounded-lg shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-200 border-l-4 border-[var(--color)] hover:bg-[var(--hover)]"
 >
 	<!-- Image on the left side -->
 	<img th:src="${song.getAlbumArtUrl()}" alt="Album art" class="w-32 h-32 object-cover">
@@ -12,7 +12,7 @@
 		<form th:if="${showAddButton}" action="/search/add" method="post" class="mt-4">
 			<input type="hidden" name="id" th:value="*{getId()}"/>
 			<input type="hidden" name="query" th:value="${query}"/>
-			<button type="submit" class="bg-green-500 text-white py-2 px-4 rounded-lg border-2 border-transparent hover:bg-green-600 transition duration-200">
+			<button type="submit" class="bg-[var(--color)] text-white py-2 px-4 rounded-lg border-2 border-transparent hover:bg-[var(--hover)] transition duration-200">
 				Add to song queue
 			</button>
 		</form>

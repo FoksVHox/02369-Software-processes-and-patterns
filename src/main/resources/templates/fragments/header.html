@@ -1,4 +1,48 @@
 <!-- Header -->
 <header th:fragment="header" class="absolute top-0 left-0 w-full bg-[#181818] border-b border-[#282828] py-4 px-8 flex justify-between items-center">
-    <a href="/"><h1 class="text-xl font-bold text-[var(--spotify-green)]">SongQueue</h1></a>
+    <a href="/"><h1 class="text-xl font-bold text-[var(--color)]">SongQueue</h1></a>
+
+    <div class="relative">
+        <select id="theme-select"
+                class="bg-[#282828] border border-[#3e3e3e] rounded-lg px-2 py-1 text-sm">
+            <option value="default">Green</option>
+            <option value="pink">Pink</option>
+            <option value="blue">Blue</option>
+            <option value="purple">Purple</option>
+            <option value="orange">Orange</option>
+            <option value="yellow">Yellow</option>
+            <option value="teal">Teal</option>
+            <option value="cyan">Cyan</option>
+            <option value="magenta">Magenta</option>
+            <option value="lime">Lime</option>
+
+        </select>
+    </div>
+
+    <link th:href="@{/css/theme.css}" rel="stylesheet">
+    <script th:src="@{/js/theme.js}"></script>
+    <script>
+        // Immediately set theme class based on localStorage
+        const savedTheme = localStorage.getItem("theme") || "default";
+        if (savedTheme === "pink") {
+            document.documentElement.classList.add("theme-pink");
+        } else if (savedTheme === "blue") {
+            document.documentElement.classList.add("theme-blue");
+        }else if (savedTheme === "purple") {
+            document.documentElement.classList.add("theme-purple");
+        }else if (savedTheme === "orange") {
+            document.documentElement.classList.add("theme-orange");
+        }else if (savedTheme === "yellow") {
+            document.documentElement.classList.add("theme-yellow");
+        }else if (savedTheme === "teal") {
+            document.documentElement.classList.add("theme-teal");
+        }else if (savedTheme === "cyan") {
+            document.documentElement.classList.add("theme-cyan");
+        }else if (savedTheme === "magenta") {
+            document.documentElement.classList.add("theme-magenta");
+        }else if (savedTheme === "lime") {
+            document.documentElement.classList.add("theme-lime");
+        }
+        document.body.style.visibility = "visible";
+    </script>
 </header>

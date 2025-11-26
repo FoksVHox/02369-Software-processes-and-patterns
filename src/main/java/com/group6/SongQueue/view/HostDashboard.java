@@ -49,7 +49,11 @@ public class HostDashboard {
 		// Retrieve playlist from Spotify
 		List<Song> songs = new ArrayList<>();
 		try {
-			String playlistId = playlistUrl.substring(0, playlistUrl.indexOf('?')).replaceFirst("https://open.spotify.com/playlist/", "");
+			// Extract playlist id from link
+			String playlistId =
+				playlistUrl
+					.substring(0, playlistUrl.contains("?") ? playlistUrl.indexOf('?') : playlistUrl.length())
+					.replaceFirst("https://open.spotify.com/playlist/", "");
 			System.out.println(playlistId);
 
 			RestTemplate rest = new RestTemplate();
