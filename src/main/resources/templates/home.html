@@ -5,11 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <script src="https://cdn.tailwindcss.com"></script>
     <title>Spotify Dashboard</title>
-    <style>
-        :root {
-            --spotify-green: #1DB954;
-        }
-    </style>
 </head>
 <body class="bg-[#121212] text-white min-h-screen flex flex-col items-center font-sans">
 
@@ -18,7 +13,7 @@
 <main class="flex-1 w-full flex items-center justify-center">
     <div class="bg-[#181818] border border-[#282828] rounded-2xl p-10 w-full max-w-xl flex flex-col gap-6 mt-24 shadow-lg">
         <div class="text-center">
-            <h1 class="text-3xl font-bold text-[var(--spotify-green)]">Join a Session</h1>
+            <h1 class="text-3xl font-bold text-[var(--color)]">Join a Session</h1>
             <p class="text-gray-400">Enter a host's code to add songs and vote without logging in.</p>
         </div>
 
@@ -33,10 +28,10 @@
         <form action="/join" method="post" class="flex flex-col gap-4">
             <label for="join-code" class="text-left font-semibold text-gray-300">Join Code</label>
             <input id="join-code" name="join-code" type="text" placeholder="ABCDEF" maxlength="6" minlength="6"
-                   class="bg-[#282828] text-white border border-[#3e3e3e] rounded-lg px-3 py-2 uppercase tracking-widest text-center focus:outline-none focus:ring-2 focus:ring-[var(--spotify-green)]"
+                   class="bg-[#282828] text-white border border-[#3e3e3e] rounded-lg px-3 py-2 uppercase tracking-widest text-center focus:outline-none focus:ring-2 focus:ring-[var(--color)]"
                    required/>
             <button type="submit"
-                    class="bg-[var(--spotify-green)] text-black font-semibold py-2 rounded-lg hover:bg-[#1ed760] transition">
+                    class="bg-[var(--color)] text-black font-semibold py-2 rounded-lg hover:bg-[var(--hover)] transition">
                 Join Session
             </button>
         </form>
@@ -54,7 +49,7 @@
         </div>
 
         <div th:if="${isHost}" class="bg-[#111]/80 border border-[#2a2a2a] rounded-lg p-4">
-            <h2 class="text-xl font-semibold text-[var(--spotify-green)]">Hosting?</h2>
+            <h2 class="text-xl font-semibold text-[var(--color)]">Hosting?</h2>
             <p th:if="${activeJoinCode}" class="text-gray-300">Share this code with your guests: <span
                     class="font-mono text-white" th:text="${activeJoinCode}">ABCDEF</span></p>
             <p th:unless="${activeJoinCode}" class="text-gray-400">Create a queue on the dashboard to generate a join
@@ -68,6 +63,8 @@
         </div>
     </div>
 </main>
+
+<script th:src="@{/js/theme.js}"></script>
 
 </body>
 </html>

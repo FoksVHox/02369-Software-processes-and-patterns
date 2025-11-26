@@ -1,0 +1,87 @@
+
+/* apply variables */
+body { background-color: var(--background); transition: background-color .15s; }
+header { background-color: var(--card); transition: background-color .15s; }
+:root{
+    --color: #1DB954;
+    --background: #121212;
+    --card: #181818;
+    --hover: #1ed760;
+}
+
+/* pink theme */
+.theme-pink {
+    --color: #ff4fad;
+    --background: #1a0f14;
+    --card: #2a0f1f;
+    --hover: #ff79c6;
+}
+
+/* blue theme */
+.theme-blue {
+    --color: #4dbbff;
+    --background: #0f141a;
+    --card: #0f1f2a;
+    --hover: #79c6ff;
+}
+
+/* purple theme */
+.theme-purple {
+    --color: #b84dff;
+    --background: #140a1a;
+    --card: #210d2d;
+    --hover: #d479ff;
+}
+
+/* orange theme */
+.theme-orange {
+    --color: #ff9f4d;
+    --background: #1a0f0a;
+    --card: #2d160d;
+    --hover: #ffc279;
+}
+
+/* yellow theme */
+.theme-yellow {
+    --color: #ffea4d;
+    --background: #1a1a0f;
+    --card: #2d2d0d;
+    --hover: #fff279;
+}
+
+/* teal theme */
+.theme-teal {
+    --color: #11ffbc;
+    --background: #0a1a14;
+    --card: #0d2d20;
+    --hover: #79ffe6;
+}
+
+/* cyan theme */
+.theme-cyan {
+    --color: #4dffff;
+    --background: #0a1a1a;
+    --card: #0d2d2d;
+    --hover: #79ffff;
+}
+
+/* magenta theme */
+.theme-magenta {
+    --color: #ff4dff;
+    --background: #1a001a;
+    --card: #2d002d;
+    --hover: #ff79ff;
+}
+
+/* lime theme */
+.theme-lime {
+    --color: #ccff4d;
+    --background: #1a1a0a;
+    --card: #2d2d0d;
+    --hover: #e6ff79;
+}
+
+/* apply variables */
+body { background-color: var(--background); transition: background-color .15s; }
+header { background-color: var(--card); transition: background-color .15s; }
+body { visibility: hidden; }

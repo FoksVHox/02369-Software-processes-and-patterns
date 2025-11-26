@@ -10,7 +10,7 @@
       </div>
     </div>
     <div class="flex flex-col">
-      <h2 th:text="${currentSong.getTitle()}" class="text-xl font-bold text-[var(--spotify-green)]">Currently Playing</h2>
+      <h2 th:text="${currentSong.getTitle()}" class="text-xl font-bold text-[var(--color)]">Currently Playing</h2>
       <p th:text="${currentSong.getArtist()}" class="text-gray-400">Artist</p>
 
       <span class="vote-count text-lg font-semibold" th:text="'Won with ' + ${currentSong.getVotes() + ' votes'}">Won with 0 votes</span>

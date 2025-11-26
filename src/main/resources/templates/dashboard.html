@@ -1,16 +1,11 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.tailwindcss.com"></script>
     <title>Session Dashboard</title>
-
-    <style>
-        :root {
-            --spotify-green: #1DB954;
-        }
-    </style>
 </head>
 
 <body class="bg-[#121212] text-white min-h-screen font-sans">
@@ -28,7 +23,7 @@
         <!-- Create session button -->
         <button id="openModal"
                 th:if="${songqueue_size < 0}"
-                class="bg-[var(--spotify-green)] text-black font-semibold px-5 py-3 rounded-xl hover:bg-[#1ed760] transition w-full">
+                class="bg-[var(--color)] text-black font-semibold px-5 py-3 rounded-xl hover:bg-[var(--hover)] transition w-full">
             Create Session
         </button>
 
@@ -41,7 +36,7 @@
         <!-- Join code (only available if session exists) -->
         <div th:if="${joinCode}"
              class="mt-6 bg-[#111]/80 border border-[#2a2a2a] rounded-lg p-4">
-            <h2 class="text-lg font-semibold text-[var(--spotify-green)]">Share your join code</h2>
+            <h2 class="text-lg font-semibold text-[var(--color)]">Share your join code</h2>
             <p class="font-mono text-xl tracking-widest" th:text="${joinCode}">ABCDEF</p>
         </div>
 
@@ -82,13 +77,13 @@
             <div class="flex flex-col gap-3 mb-6">
                 <label class="flex items-center gap-3 bg-[#222] px-4 py-3 rounded-lg cursor-pointer">
                     <input type="radio" name="startType" value="playlist"
-                           class="accent-[var(--spotify-green)] start-radio" />
+                           class="accent-[var(--color)] start-radio" />
                     <span>Playlist</span>
                 </label>
 
                 <label class="flex items-center gap-3 bg-[#222] px-4 py-3 rounded-lg cursor-pointer">
                     <input type="radio" name="startType" value="empty"
-                           class="accent-[var(--spotify-green)] start-radio" />
+                           class="accent-[var(--color)] start-radio" />
                     <span>Empty Queue</span>
                 </label>
             </div>
@@ -100,7 +95,7 @@
                        name="playlist-url"
                        type="text"
                        placeholder="Paste your public Spotify playlist link"
-                       class="bg-[#282828] text-white border border-[#3e3e3e] rounded-lg px-3 py-2 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--spotify-green)]" />
+                       class="bg-[#282828] text-white border border-[#3e3e3e] rounded-lg px-3 py-2 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--color)]" />
             </div>
 
             <!-- Settings -->
@@ -112,7 +107,7 @@
                 <label class="flex items-center gap-3 cursor-pointer">
                     <input id="enableVeto"
                            type="checkbox"
-                           class="accent-[var(--spotify-green)]" />
+                           class="accent-[var(--color)]" />
                     <span class="text-gray-200 font-semibold">Enable vetoes</span>
                 </label>
 
@@ -129,7 +124,7 @@
                            min="1"
                            placeholder="1"
                            class="bg-[#282828] text-white border border-[#3e3e3e] rounded-lg px-3 py-2
-                      placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--spotify-green)]" />
+                      placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--color)]" />
 
                     <label for="numberOfVetoesToRemoveSong" class="font-semibold text-gray-200">
                         Number of vetoes required to remove song from queue:
@@ -141,7 +136,7 @@
                            min="1"
                            placeholder="1"
                            class="bg-[#282828] text-white border border-[#3e3e3e] rounded-lg px-3 py-2
-                      placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--spotify-green)]" />
+                      placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--color)]" />
                 </div>
 
             </div>
@@ -152,12 +147,10 @@
                 <button id="createButton"
                         type="submit"
                         disabled
-                        class="opacity-50 cursor-not-allowed bg-[var(--spotify-green)] text-black font-semibold px-6 py-2 rounded-lg transition">
+                        class="opacity-50 cursor-not-allowed bg-[var(--color)] text-black font-semibold px-6 py-2 rounded-lg transition">
                     Create
                 </button>
             </div>
-
-
 
         </form>
     </div>
@@ -187,7 +180,7 @@
         radio.addEventListener("change", () => {
             createButton.disabled = false;
             createButton.classList.remove("opacity-50", "cursor-not-allowed");
-            createButton.classList.add("hover:bg-[#1ed760]");
+            createButton.classList.add("hover:bg-[var(--hover)]");
         });
     });
 
@@ -203,4 +196,6 @@
         }
     });
 </script>
+
+
 
