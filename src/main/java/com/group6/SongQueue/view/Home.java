@@ -92,7 +92,7 @@ public class Home {
         } else {
             redirectAttributes.addFlashAttribute("homeError", "Unable to find a session with that code.");
         }
-        return "redirect:/";
+        return "redirect:/vote";
     }
 
     @PostMapping("/leave")

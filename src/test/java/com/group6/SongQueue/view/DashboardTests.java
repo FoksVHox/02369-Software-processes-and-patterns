@@ -39,7 +39,7 @@ public class DashboardTests {
 
     @Test
     void testNoSongqueue() throws Exception {
-        MvcResult result = mockMvc.perform(get("/dashboard").session(session))
+        MvcResult result = mockMvc.perform(get("/").session(session))
                 .andExpect(status().isOk())
                 .andReturn();
 
