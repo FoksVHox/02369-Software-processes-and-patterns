@@ -96,14 +96,14 @@ public class addSong {
 
 	@PostMapping("/add")
 	public String addSong(@RequestParam(name = "id", required = true) String songId, @RequestParam(name = "query", required = true) String searchQuery, HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-                String accessToken = songQueueController.getQueueOwnerToken(session);
-                if (accessToken == null) {
-                        if (session.getAttribute("spotify_access_token") != null) {
-                                return Login.redirectToLogin("/search?query=" + (searchQuery == null ? "" : searchQuery), session);
-                        }
-                        redirectAttributes.addFlashAttribute("error", "Join a session before adding songs.");
-                        return "redirect:/search";
-                }
+        String accessToken = songQueueController.getQueueOwnerToken(session);
+        if (accessToken == null) {
+            if (session.getAttribute("spotify_access_token") != null) {
+                return Login.redirectToLogin("/search?query=" + (searchQuery == null ? "" : searchQuery), session);
+            }
+            redirectAttributes.addFlashAttribute("error", "Join a session before adding songs.");
+            return "redirect:/search";
+        }
 
 		redirectAttributes.addAttribute("query", searchQuery);
 
@@ -128,10 +128,10 @@ public class addSong {
 		}
 
 		// Add song to song queue
-                if(songQueueController.getSongCount(session) >= 0) {
-                        songQueueController.addSong(session, song);
-                        redirectAttributes.addFlashAttribute("addedSong", "Succesfully added " + song.getTitle() + " to song queue.");
-                } else {
+        if(songQueueController.getSongCount(session) >= 0) {
+            songQueueController.addSong(session, song);
+            redirectAttributes.addFlashAttribute("addedSong", "Succesfully added " + song.getTitle() + " to song queue.");
+        } else {
 			redirectAttributes.addFlashAttribute("error", "No active song queue to add song to.");
 		}
 
@@ -143,8 +143,14 @@ public class addSong {
 			HttpSession session,
 			RedirectAttributes redirectAttributes) {
 
-		String accessToken = (String) session.getAttribute("spotify_access_token");
-		if (accessToken == null) return Login.redirectToLogin("/dashboard", session);
+		String accessToken = songQueueController.getQueueOwnerToken(session);
+        if (accessToken == null) {
+            if (session.getAttribute("spotify_access_token") != null) {
+                return Login.redirectToLogin("/", session);
+            }
+            redirectAttributes.addFlashAttribute("error", "Join a session before adding songs.");
+            return "redirect:/";
+        }
 
 		try {
 			// Extract track ID
@@ -182,7 +188,7 @@ public class addSong {
 					"Failed to add song. Check the link and try again.");
 		}
 
-		return "redirect:/dashboard";
+		return "redirect:/vote";
 	}
 
 	private String extractTrackId(String input) {

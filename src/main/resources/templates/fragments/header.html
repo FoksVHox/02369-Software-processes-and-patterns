@@ -1,30 +1,23 @@
 <!-- Header -->
 <header th:fragment="header" class="absolute top-0 left-0 w-full bg-[#181818] border-b border-[#282828] py-4 px-8 flex justify-between items-center">
-    <h1 class="text-xl font-bold text-[var(--color)]">SongQueue</h1>
+    <a href="/"><h1 class="text-xl font-bold text-[var(--color)]">SongQueue</h1></a>
 
-    <nav class="flex gap-4 text-gray-300">
-        <a href="/" class="hover:text-[var(--color)] transition">Join session</a>
-        <a href="/dashboard" class="hover:text-[var(--color)] transition">Manage session</a>
-        <a href="/vote" class="hover:text-[var(--color)] transition">Vote</a>
-        <a href="/login" class="hover:text-red-500 transition">Login</a>
+    <div class="relative">
+        <select id="theme-select"
+                class="bg-[#282828] border border-[#3e3e3e] rounded-lg px-2 py-1 text-sm">
+            <option value="default">Green</option>
+            <option value="pink">Pink</option>
+            <option value="blue">Blue</option>
+            <option value="purple">Purple</option>
+            <option value="orange">Orange</option>
+            <option value="yellow">Yellow</option>
+            <option value="teal">Teal</option>
+            <option value="cyan">Cyan</option>
+            <option value="magenta">Magenta</option>
+            <option value="lime">Lime</option>
 
-        <div class="relative">
-            <select id="theme-select"
-                    class="bg-[#282828] border border-[#3e3e3e] rounded-lg px-2 py-1 text-sm">
-                <option value="default">Green</option>
-                <option value="pink">Pink</option>
-                <option value="blue">Blue</option>
-                <option value="purple">Purple</option>
-                <option value="orange">Orange</option>
-                <option value="yellow">Yellow</option>
-                <option value="teal">Teal</option>
-                <option value="cyan">Cyan</option>
-                <option value="magenta">Magenta</option>
-                <option value="lime">Lime</option>
-
-            </select>
-        </div>
-    </nav>
+        </select>
+    </div>
 
     <link th:href="@{/css/theme.css}" rel="stylesheet">
     <script th:src="@{/js/theme.js}"></script>
@@ -53,4 +46,3 @@
         document.body.style.visibility = "visible";
     </script>
 </header>
-

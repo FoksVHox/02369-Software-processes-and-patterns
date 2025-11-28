@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Session Dashboard</title>
+
+    <style>
+        :root {
+            --spotify-green: #1DB954;
+        }
+    </style>
+</head>
+
+<body class="bg-[#121212] text-white min-h-screen font-sans">
+
+	<header th:replace="~{fragments/header::header}"></header>
+
+	<!-- Body Container -->
+	<main class="flex flex-col items-center justify-center pt-32">
+
+	    <!-- Host Card -->
+	    <section th:if="${isHost}" class="bg-[#181818] border border-[#282828] rounded-2xl p-10 w-full max-w-xl shadow-lg text-center">
+	    	<h1 class="text-3xl font-bold text-[var(--color)]">Manage Session (<span th:text="${activeJoinCode}"></span>)</h1>
+
+	        <div class="mt-10 text-sm text-gray-300">
+	            Logged in as:
+	            <span class="font-semibold text-white" th:text="${name}">User</span><br>
+	            <span th:text="${email}">unknown</span>
+	        </div>
+
+	        <!-- Join code (only available if session exists) -->
+	        <div class="mt-6 bg-[#111]/80 border border-[#2a2a2a] rounded-lg p-4">
+	            <h2 class="text-lg font-semibold text-[var(--color)]">Share your join code</h2>
+	            <p class="font-mono text-xl tracking-widest" th:text="${activeJoinCode}">ABCDEF</p>
+	        </div>
+
+			<!-- Navigation -->
+			<div class="mt-6 flex flex-row justify-center gap-4 items-center flex-wrap">
+				<a href="/live" class="bg-[var(--color)] text-black font-semibold py-2 w-1/3 min-w-16 rounded-lg hover:bg-[var(--hover)] transition">
+					View live playlist
+				</a>
+				<a href="/vote" class="bg-[var(--color)] text-black font-semibold py-2 w-1/3 min-w-16 rounded-lg hover:bg-[var(--hover)] transition">
+					Vote on songs
+				</a>
+			</div>
+
+	        <!-- Delete session button -->
+	        <form action="/dashboard/close-session"
+	              method="post"
+	              class="mt-6">
+	            <button type="submit"
+	                    class="bg-red-600 text-white w-full py-3 rounded-xl font-semibold hover:bg-red-700 transition">
+	                End Session
+	            </button>
+	        </form>
+	    </section>
+
+	    <!-- Guest Card -->
+	    <section th:unless="${isHost}" class="bg-[#181818] border border-[#282828] rounded-2xl p-10 w-full max-w-xl shadow-lg text-center">
+
+	    	<h1 class="text-3xl font-bold text-[var(--color)]">Joined session (<span th:text="${activeJoinCode}"></span>)</h1>
+
+	        <!-- Join code (only available if session exists) -->
+	        <div class="mt-6 bg-[#111]/80 border border-[#2a2a2a] rounded-lg p-4">
+	            <h2 class="text-lg font-semibold text-[var(--color)]">Share your join code</h2>
+	            <p class="font-mono text-xl tracking-widest" th:text="${activeJoinCode}">ABCDEF</p>
+	        </div>
+
+			<!-- Navigation -->
+			<div class="mt-6 flex flex-row justify-center items-center w-full">
+				<a href="/vote" class="bg-[var(--color)] text-black font-semibold w-1/2 min-w-20 py-2 rounded-lg hover:bg-[var(--hover)] transition">
+					Vote on songs
+				</a>
+			</div>
+
+			<!-- Leave session button -->
+		   <form action="/leave"
+		         method="post"
+		         class="mt-6">
+		       <button type="submit"
+		               class="bg-red-600 text-white w-full py-3 rounded-xl font-semibold hover:bg-red-700 transition">
+		           Leave Session
+		       </button>
+		   </form>
+
+	    </section>
+
+	</main>
+</body>
+
+</html>
