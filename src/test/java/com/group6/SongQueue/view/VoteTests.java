@@ -95,6 +95,11 @@ public class VoteTests {
 		mockMvc.perform(post("/vote").session(session).param("songId", "id5").param("vote", "up"))
             .andExpect(status().isFound());
 
+  		mockMvc.perform(post("/vote").session(session).param("songId", "id2").param("vote", "up"))
+                .andExpect(status().isFound());
+        mockMvc.perform(post("/vote").session(session).param("songId", "id2").param("vote", "up"))
+                    .andExpect(status().isFound());
+
         mockMvc.perform(post("/vote").session(session).param("songId", "id3").param("vote", "down"))
             .andExpect(status().isFound());
 
@@ -110,6 +115,37 @@ public class VoteTests {
         List<Song> queue = ((List<Song>)model.get("songqueue"));
         assertEquals(7, queue.size());
         assertEquals(queue.get(0).getId(), "id5");
+        assertEquals(queue.get(0).getVotes(), 1);
         assertEquals(queue.get(6).getId(), "id3");
+        assertEquals(queue.get(6).getVotes(), -1);
     }
+
+    @Test
+	void testVetoedSongqueue() throws Exception {
+		testFilledSongqueue();
+
+		mockMvc.perform(post("/vote").session(session).param("songId", "id5").param("vote", "up"))
+               .andExpect(status().isFound());
+
+        mockMvc.perform(post("/vote").session(session).param("songId", "id3").param("vote", "down"))
+            .andExpect(status().isFound());
+        mockMvc.perform(post("/vote/veto").session(session).param("songId", "id3"))
+            .andExpect(status().isFound());
+
+		MvcResult result = mockMvc.perform(get("/vote").session(session))
+                   .andExpect(status().isOk())
+                   .andReturn();
+
+           ModelAndView modelView = result.getModelAndView();
+           assertNotNull(modelView);
+           var model = modelView.getModel();
+
+           assertTrue(model.containsKey("songqueue"));
+           List<Song> queue = ((List<Song>)model.get("songqueue"));
+           assertEquals(7, queue.size());
+           assertEquals(queue.get(0).getId(), "id5");
+           assertEquals(queue.get(0).getVotes(), 1);
+           assertEquals(queue.get(6).getId(), "id3");
+           assertEquals(queue.get(6).getVetoCount(), 1);
+       }
 }
