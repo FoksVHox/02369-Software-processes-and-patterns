@@ -1,7 +1,9 @@
 package com.group6.SongQueue.view;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,9 +50,8 @@ public class DashboardTests {
         assertNotNull(modelView);
         var model = modelView.getModel();
 
-        assertTrue(model.containsKey("name"));
-        assertNotNull(model.get("songqueue_size"));
-        assertEquals(-1, ((Number) model.get("songqueue_size")).intValue());
+        assertFalse(model.containsKey("name"));
+        assertNull(model.get("songqueue_size"));
     }
 
     @Test
@@ -60,7 +61,7 @@ public class DashboardTests {
         		.param("playlist-url", "https://open.spotify.com/playlist/2YZSzdHBhmmMDn6J43U3b5?si=355a4a75fac844f8")
      		).andExpect(status().isFound());
 
-        MvcResult result = mockMvc.perform(get("/dashboard").session(session))
+        MvcResult result = mockMvc.perform(get("/").session(session))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -78,7 +79,7 @@ public class DashboardTests {
    		mockMvc.perform(post("/dashboard/create-songqueue").session(session))
      		.andExpect(status().isFound());
 
-        MvcResult result = mockMvc.perform(get("/dashboard").session(session))
+        MvcResult result = mockMvc.perform(get("/").session(session))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -95,12 +96,12 @@ public class DashboardTests {
     void testAddingSongFromLink() throws Exception {
     	testCreateEmptySongqueue();
 
-  		mockMvc.perform(post("/dashboard/add-song")
+  		mockMvc.perform(post("/add-song/by-url")
        		.session(session)
        		.param("song-url", "https://open.spotify.com/track/1MUExGawtk7kNqKaMO28wD?si=c63ede26738b4b3d")
     		).andExpect(status().isFound());
 
-        MvcResult result = mockMvc.perform(get("/dashboard").session(session))
+        MvcResult result = mockMvc.perform(get("/").session(session))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -117,9 +118,9 @@ public class DashboardTests {
     void testEndingSession() throws Exception {
     	testCreateEmptySongqueue();
 
-  		mockMvc.perform(post("/dashboard/close-session").session(session)).andExpect(status().isFound());
+  		mockMvc.perform(post("/close-session").session(session)).andExpect(status().isFound());
 
-        MvcResult result = mockMvc.perform(get("/dashboard").session(session))
+        MvcResult result = mockMvc.perform(get("/").session(session))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -127,8 +128,7 @@ public class DashboardTests {
         assertNotNull(modelView);
         var model = modelView.getModel();
 
-        assertTrue(model.containsKey("name"));
-        assertNotNull(model.get("songqueue_size"));
-        assertEquals(-1, ((Number) model.get("songqueue_size")).intValue());
+        assertFalse(model.containsKey("name"));
+        assertNull(model.get("songqueue_size"));
     }
 }

@@ -43,7 +43,7 @@ public class Home {
         model.addAttribute("activeJoinCode", songQueueController.getJoinCode(session));
 
         if(isInQueue) {
-       		addHostProfile(session, model);
+        	addHostProfile(session, model);
        		return "home-joined";
         } else {
         	return "home-start";
@@ -53,6 +53,10 @@ public class Home {
 	private void addHostProfile(HttpSession session, Model model) {
 		String accessToken = (String) session.getAttribute("spotify_access_token");
 		if (accessToken == null) return;
+
+		if (songQueueController.isInQueue(session)) {
+			model.addAttribute("songqueue_size", songQueueController.getSongCount(session));
+		}
 
 		try {
 			RestTemplate rest = new RestTemplate();
