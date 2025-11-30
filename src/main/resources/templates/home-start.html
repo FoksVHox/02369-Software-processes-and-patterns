@@ -37,32 +37,6 @@
                 Join Session
             </button>
         </form>
-
-        <div th:if="${isInQueue}" class="bg-[#111]/80 border border-[#2a2a2a] rounded-lg p-4 flex flex-col gap-3">
-            <p class="text-sm text-gray-300">You are currently connected to a session</p>
-            <p th:if="${activeJoinCode}" class="text-lg font-semibold">Code: <span
-                    th:text="${activeJoinCode}">ABCDEF</span></p>
-            <form action="/leave" method="post">
-                <button type="submit"
-                        class="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition">
-                    Leave Session
-                </button>
-            </form>
-        </div>
-
-        <div th:if="${isHost}" class="bg-[#111]/80 border border-[#2a2a2a] rounded-lg p-4">
-            <h2 class="text-xl font-semibold text-[var(--color)]">Hosting?</h2>
-            <p th:if="${activeJoinCode}" class="text-gray-300">Share this code with your guests: <span
-                    class="font-mono text-white" th:text="${activeJoinCode}">ABCDEF</span></p>
-            <p th:unless="${activeJoinCode}" class="text-gray-400">Create a queue on the dashboard to generate a join
-                code for your guests.</p>
-            <form th:if="${activeJoinCode}" action="/close-session" method="post" class="mt-4">
-                <button type="submit"
-                        class="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition w-full">
-                    End Session for Everyone
-                </button>
-            </form>
-        </div>
     </section>
 
     <!-- Create a session -->

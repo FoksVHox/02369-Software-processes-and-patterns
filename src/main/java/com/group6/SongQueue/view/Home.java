@@ -106,22 +106,4 @@ public class Home {
         return "redirect:/";
     }
 
-    @PostMapping("/close-session")
-    public String closeSession(HttpSession session, RedirectAttributes redirectAttributes) {
-        String accessToken = (String) session.getAttribute("spotify_access_token");
-        if (accessToken == null) {
-            return Login.redirectToLogin("/", session);
-        }
-
-        if (!songQueueController.isHostSession(session)) {
-            redirectAttributes.addFlashAttribute("homeError", "Create a queue before ending the session.");
-            return "redirect:/";
-        }
-
-        songQueueController.deleteSongQueue(session);
-        songQueueController.leaveQueue(session);
-        redirectAttributes.addFlashAttribute("homeMessage", "Session ended and queue cleared.");
-        return "redirect:/";
-    }
-
 }

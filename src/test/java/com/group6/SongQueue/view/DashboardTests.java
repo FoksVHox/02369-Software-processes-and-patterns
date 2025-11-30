@@ -118,7 +118,7 @@ public class DashboardTests {
     void testEndingSession() throws Exception {
     	testCreateEmptySongqueue();
 
-  		mockMvc.perform(post("/close-session").session(session)).andExpect(status().isFound());
+  		mockMvc.perform(post("/dashboard/close-session").session(session)).andExpect(status().isFound());
 
         MvcResult result = mockMvc.perform(get("/").session(session))
                 .andExpect(status().isOk())
