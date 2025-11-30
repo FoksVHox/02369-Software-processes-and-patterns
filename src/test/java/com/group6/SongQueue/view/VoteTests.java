@@ -75,17 +75,34 @@ public class VoteTests {
 		songQueueController.addSong(session, new Song("id6", "Song 6", "Artist 2", null));
 		songQueueController.addSong(session, new Song("id7", "Song 7", "Artist 2", null));
 
-        MvcResult result = mockMvc.perform(get("/vote").session(session))
-                .andExpect(status().isOk())
-                .andReturn();
+        {
+	        MvcResult result = mockMvc.perform(get("/vote").session(session))
+	                .andExpect(status().isOk())
+	                .andReturn();
 
-        ModelAndView modelView = result.getModelAndView();
-        assertNotNull(modelView);
-        var model = modelView.getModel();
+	        ModelAndView modelView = result.getModelAndView();
+	        assertNotNull(modelView);
+	        var model = modelView.getModel();
 
-        assertTrue(model.containsKey("songqueue"));
-        List<Song> queue = ((List<Song>)model.get("songqueue"));
-        assertEquals(7, queue.size());
+	        assertTrue(model.containsKey("songqueue"));
+	        List<Song> queue = ((List<Song>)model.get("songqueue"));
+	        assertEquals(7, queue.size());
+        }
+
+        // Test songlist fragment
+        {
+	        MvcResult result = mockMvc.perform(get("/vote/songlist").session(session))
+	                .andExpect(status().isOk())
+	                .andReturn();
+
+	        ModelAndView modelView = result.getModelAndView();
+	        assertNotNull(modelView);
+	        var model = modelView.getModel();
+
+	        assertTrue(model.containsKey("songqueue"));
+	        List<Song> queue = ((List<Song>)model.get("songqueue"));
+	        assertEquals(7, queue.size());
+        }
     }
 
 	@Test
