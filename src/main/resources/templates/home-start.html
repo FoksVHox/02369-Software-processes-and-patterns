@@ -12,8 +12,22 @@
 <header th:replace="~{fragments/header::header}"></header>
 
 <main class="flex flex-col w-full gap-16 items-center justify-center">
+	<!-- Landing page about section -->
+    <section class="bg-[#181818] border border-[#282828] rounded-2xl p-10 w-full max-w-xl flex flex-col gap-4 mt-24 shadow-lg">
+        <div class="text-center">
+            <h1 class="text-3xl font-bold pb-4">Welcome to <span class="text-[var(--color)]">SongQueue</span>!</h1>
+            <p class="text-gray-400">
+            	SongQueue is the people's party playlist manager, where anyone can vote on, and add their favorite songs to the party playlist!
+                <br>
+                The songs will automatically be sorted by popularity.
+                <br>
+                To get started, either join an existing session, or create a new one with Spotify below.
+            </p>
+        </div>
+    </section>
+
 	<!-- Join a session -->
-    <section class="bg-[#181818] border border-[#282828] rounded-2xl p-10 w-full max-w-xl flex flex-col gap-6 mt-24 shadow-lg">
+    <section class="bg-[#181818] border border-[#282828] rounded-2xl p-10 w-full max-w-xl flex flex-col gap-4 shadow-lg">
         <div class="text-center">
             <h1 class="text-3xl font-bold text-[var(--color)]">Join a Session</h1>
             <p class="text-gray-400">Enter a host's code to add songs and vote without logging in.</p>
