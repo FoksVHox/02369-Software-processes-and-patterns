@@ -47,7 +47,7 @@ public class ExampleViewTest {
         ModelAndView modelView = result.getModelAndView();
         assertNotNull(modelView);
 
-        assertEquals(3, modelView.getModel().size());
+        assertEquals(4, modelView.getModel().size());
     }
 
 }

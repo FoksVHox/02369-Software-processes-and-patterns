@@ -38,15 +38,15 @@ public class addSong {
 
 	@GetMapping("")
 	public String search(@RequestParam(name = "query", required = false) String searchQuery, HttpSession session, Model model) {
-                String accessToken = songQueueController.getQueueOwnerToken(session);
-                if (accessToken == null) {
-                        if (session.getAttribute("spotify_access_token") != null) {
-                                return Login.redirectToLogin("/search" + (searchQuery == null ? "" : "?query=" + searchQuery), session);
-                        }
-                        model.addAttribute("error", "Join a session to search for songs.");
-                        model.addAttribute("songs", new ArrayList<>());
-                        return "fragments/addSong :: addSong";
+        String accessToken = songQueueController.getQueueOwnerToken(session);
+        if (accessToken == null) {
+                if (session.getAttribute("spotify_access_token") != null) {
+                        return Login.redirectToLogin("/search" + (searchQuery == null ? "" : "?query=" + searchQuery), session);
                 }
+                model.addAttribute("error", "Join a session to search for songs.");
+                model.addAttribute("songs", new ArrayList<>());
+                return "fragments/addSong :: addSong";
+        }
 
 		if(searchQuery == null || searchQuery.isEmpty()) {
 			model.addAttribute("songs", new ArrayList<>());

@@ -43,7 +43,7 @@ public class Home {
         model.addAttribute("activeJoinCode", songQueueController.getJoinCode(session));
 
         if(isInQueue) {
-       		addHostProfile(session, model);
+        	addHostProfile(session, model);
        		return "home-joined";
         } else {
         	return "home-start";
@@ -53,6 +53,10 @@ public class Home {
 	private void addHostProfile(HttpSession session, Model model) {
 		String accessToken = (String) session.getAttribute("spotify_access_token");
 		if (accessToken == null) return;
+
+		if (songQueueController.isInQueue(session)) {
+			model.addAttribute("songqueue_size", songQueueController.getSongCount(session));
+		}
 
 		try {
 			RestTemplate rest = new RestTemplate();
@@ -99,24 +103,6 @@ public class Home {
     public String leaveQueue(HttpSession session, RedirectAttributes redirectAttributes) {
         songQueueController.leaveQueue(session);
         redirectAttributes.addFlashAttribute("homeMessage", "You have left the session.");
-        return "redirect:/";
-    }
-
-    @PostMapping("/close-session")
-    public String closeSession(HttpSession session, RedirectAttributes redirectAttributes) {
-        String accessToken = (String) session.getAttribute("spotify_access_token");
-        if (accessToken == null) {
-            return Login.redirectToLogin("/", session);
-        }
-
-        if (!songQueueController.isHostSession(session)) {
-            redirectAttributes.addFlashAttribute("homeError", "Create a queue before ending the session.");
-            return "redirect:/";
-        }
-
-        songQueueController.deleteSongQueue(session);
-        songQueueController.leaveQueue(session);
-        redirectAttributes.addFlashAttribute("homeMessage", "Session ended and queue cleared.");
         return "redirect:/";
     }
 
